@@ -7,7 +7,6 @@ namespace Guennichi\Mapper\Metadata\Type;
 use Guennichi\Mapper\Context;
 use Guennichi\Mapper\Exception\ResolverNotFoundException;
 
-/** @internal */
 class CollectionType extends ListType
 {
     public function __construct(public readonly string $classname, TypeInterface $valueType)

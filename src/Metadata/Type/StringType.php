@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Type;
 
+use Guennichi\Mapper\Attribute\Flexible;
 use Guennichi\Mapper\Context;
-use Guennichi\Mapper\Exception\UnexpectedTypeException;
+use Guennichi\Mapper\Exception\UnexpectedValueException;
 
-/** @internal */
 class StringType extends ScalarType
 {
     public function __toString(): string
@@ -17,13 +17,13 @@ class StringType extends ScalarType
 
     public function resolve(mixed $input, Context $context): string
     {
-        if ($context->flexible()) {
+        if ($context->attribute(Flexible::class)) {
             /* @phpstan-ignore-next-line */
             return (string) $input;
         }
 
         if (!\is_string($input)) {
-            throw new UnexpectedTypeException($input, 'string');
+            throw new UnexpectedValueException($input, 'string', $context);
         }
         // We found that is_string() is a potential cause for performance issues
         return $input;

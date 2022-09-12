@@ -12,7 +12,6 @@ use Guennichi\Mapper\Metadata\Type\TypeInterface;
 use ReflectionParameter;
 use RuntimeException;
 
-/** @internal */
 class ParameterTypeFactory
 {
     public function __construct(

@@ -7,6 +7,14 @@ namespace Guennichi\Mapper;
 use Guennichi\Mapper\Exception\MissingArgumentsException;
 use Guennichi\Mapper\Exception\UnexpectedValueException;
 use Guennichi\Mapper\Metadata\ConstructorFetcher;
+use Guennichi\Mapper\Metadata\Factory\ConstructorFactory;
+use Guennichi\Mapper\Metadata\Factory\ParameterFactory;
+use Guennichi\Mapper\Metadata\Factory\Type\ParameterTypeFactory;
+use Guennichi\Mapper\Metadata\Factory\Type\Source\ParameterTypeFactoryInterface;
+use Guennichi\Mapper\Metadata\Factory\Type\Source\PhpDocumentorParameterTypeFactory;
+use Guennichi\Mapper\Metadata\Factory\Type\Source\ReflectionParameterTypeFactory;
+use Guennichi\Mapper\Metadata\Repository\ConstructorInMemoryRepository;
+use Guennichi\Mapper\Metadata\Repository\ConstructorRepositoryInterface;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
@@ -16,13 +24,29 @@ use Guennichi\Mapper\Metadata\Type\TypeInterface;
 
 class Mapper implements MapperInterface
 {
+    private readonly ConstructorFetcher $constructorFetcher;
+
     /**
      * @param iterable<ResolverInterface> $resolvers
      */
     public function __construct(
-        private readonly ConstructorFetcher $constructorFetcher,
+        ConstructorRepositoryInterface $constructorRepository = new ConstructorInMemoryRepository(),
+        ParameterTypeFactoryInterface $phpDocParameterTypeFactory = new PhpDocumentorParameterTypeFactory(),
+        ParameterTypeFactoryInterface $reflectionParameterTypeFactory = new ReflectionParameterTypeFactory(),
+        ?ConstructorFetcher $constructorFetcher = null,
         private readonly iterable $resolvers = [],
     ) {
+        $this->constructorFetcher = $constructorFetcher ?? new ConstructorFetcher(
+            new ConstructorFactory(
+                new ParameterFactory(
+                    new ParameterTypeFactory(
+                        $reflectionParameterTypeFactory,
+                        $phpDocParameterTypeFactory,
+                    ),
+                ),
+            ),
+            $constructorRepository,
+        );
     }
 
     public function map(mixed $source, string $target): object
@@ -77,7 +101,7 @@ class Mapper implements MapperInterface
             }
         }
 
-        throw new UnexpectedValueException($input, $type->__toString());
+        throw new UnexpectedValueException($input, $type->__toString(), $context);
     }
 
     /**
@@ -86,7 +110,7 @@ class Mapper implements MapperInterface
     private function resolveArray(mixed $input, ArrayType $type, Context $context): array
     {
         if (!\is_array($input)) {
-            throw new UnexpectedValueException($input, 'array');
+            throw new UnexpectedValueException($input, 'array', $context);
         }
 
         $items = [];
@@ -106,7 +130,7 @@ class Mapper implements MapperInterface
         $context->visitClassname($type->classname);
 
         if (!\is_array($input)) {
-            throw new UnexpectedValueException($input, 'array');
+            throw new UnexpectedValueException($input, 'array', $context);
         }
 
         $items = [];
@@ -126,14 +150,14 @@ class Mapper implements MapperInterface
         $context->visitClassname($type->classname);
 
         if (!\is_array($input)) {
-            throw new UnexpectedValueException($input, 'array');
+            throw new UnexpectedValueException($input, 'array', $context);
         }
 
         $constructor = $this->constructorFetcher->fetch($type->classname);
 
         // Early failure in case array keys does not match the required constructor params
         if ($missingParameters = array_diff_key($constructor->requiredParameters, $input)) {
-            throw new MissingArgumentsException($constructor->classname, array_keys($missingParameters));
+            throw new MissingArgumentsException($constructor->classname, array_keys($missingParameters), $input, $context);
         }
 
         $arguments = [];

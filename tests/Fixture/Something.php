@@ -19,6 +19,7 @@ class Something
         public readonly bool $paramThree,
         public readonly ?int $paramFour = 0,
         public readonly int|array|null $paramFive = null,
+        public readonly ?\DateTimeImmutable $paramSix = null,
     ) {
     }
 }

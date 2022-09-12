@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Member;
 
-use Guennichi\Mapper\Attribute\Attribute;
 use Guennichi\Mapper\Attribute\Flexible;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
 
-/** @internal */
 class Parameter
 {
     public readonly bool $flexible;
 
     /**
-     * @param array<class-string<Attribute>, Attribute> $attributes
+     * @template T of \Guennichi\Mapper\Attribute\Attribute
+     *
+     * @param array<class-string<T>, T> $attributes
      */
     public function __construct(
         public readonly string $name,

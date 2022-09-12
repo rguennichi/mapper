@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Guennichi\Mapper;
 
 use Guennichi\Mapper\Exception\MissingArgumentsException;
-use Guennichi\Mapper\Exception\UnexpectedTypeException;
+use Guennichi\Mapper\Exception\UnexpectedValueException;
 use Guennichi\Mapper\Mapper;
 use Guennichi\Mapper\MapperInterface;
 use Guennichi\Mapper\Metadata\ConstructorFetcher;
@@ -23,10 +23,7 @@ class MapperObjectTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->mapper = new Mapper(
-            $this->constructorFetcher = $this->createMock(ConstructorFetcher::class),
-            [],
-        );
+        $this->mapper = new Mapper(constructorFetcher: $this->constructorFetcher = $this->createMock(ConstructorFetcher::class));
     }
 
     public function testItThrowsExceptionWithInvalidInputType(): void
@@ -49,7 +46,7 @@ class MapperObjectTest extends TestCase
             ->with(SimpleObject::class)
             ->willReturn($expectedConstructor);
 
-        $this->expectException(UnexpectedTypeException::class);
+        $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Expected argument of type "array", "string" given');
 
         $this->mapper->map('string_value', SimpleObject::class);

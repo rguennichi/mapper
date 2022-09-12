@@ -8,7 +8,6 @@ use Guennichi\Mapper\Metadata\Factory\ConstructorFactory;
 use Guennichi\Mapper\Metadata\Member\Constructor;
 use Guennichi\Mapper\Metadata\Repository\ConstructorRepositoryInterface;
 
-/** @internal */
 class ConstructorFetcher
 {
     public function __construct(

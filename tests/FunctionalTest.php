@@ -6,15 +6,6 @@ namespace Tests\Guennichi\Mapper;
 
 use Guennichi\Mapper\Mapper;
 use Guennichi\Mapper\MapperInterface;
-use Guennichi\Mapper\Metadata\ConstructorFetcher;
-use Guennichi\Mapper\Metadata\Factory\ConstructorFactory;
-use Guennichi\Mapper\Metadata\Factory\ParameterFactory;
-use Guennichi\Mapper\Metadata\Factory\Type\ParameterTypeFactory;
-use Guennichi\Mapper\Metadata\Factory\Type\Source\PhpDocumentorParameterTypeFactory;
-use Guennichi\Mapper\Metadata\Factory\Type\Source\ReflectionParameterTypeFactory;
-use Guennichi\Mapper\Metadata\Repository\ConstructorInMemoryRepository;
-use phpDocumentor\Reflection\DocBlockFactory;
-use phpDocumentor\Reflection\Types\ContextFactory;
 use PHPUnit\Framework\TestCase;
 use Tests\Guennichi\Mapper\Fixture\Something;
 use Tests\Guennichi\Mapper\Fixture\SomethingCollection;
@@ -25,22 +16,7 @@ class FunctionalTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->mapper = new Mapper(
-            new ConstructorFetcher(
-                new ConstructorFactory(
-                    new ParameterFactory(
-                        new ParameterTypeFactory(
-                            new ReflectionParameterTypeFactory(),
-                            new PhpDocumentorParameterTypeFactory(
-                                DocBlockFactory::createInstance(),
-                                new ContextFactory(),
-                            ),
-                        ),
-                    ),
-                ),
-                new ConstructorInMemoryRepository(),
-            ),
-        );
+        $this->mapper = new Mapper();
     }
 
     public function testItMapsObjectCollectionWithValidData(): void
@@ -100,6 +76,7 @@ class FunctionalTest extends TestCase
                 'paramThree' => 'off', // Flexible => FALSE
                 // Skip paramFour...
                 'paramFive' => null, // Compound: null
+                'paramSix' => '2021-06-30',
             ],
         ];
 
@@ -127,7 +104,7 @@ class FunctionalTest extends TestCase
             new Something('test6', [
                 'key1' => 444.,
                 'key2' => 666.77,
-            ], false, paramFive: null),
+            ], false, paramFive: null, paramSix: new \DateTimeImmutable('2021-06-30')),
         );
 
         $this->assertEquals($expectedResult, $this->mapper->map($input, SomethingCollection::class));

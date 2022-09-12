@@ -12,7 +12,6 @@ use Guennichi\Mapper\Metadata\Type\ObjectType;
 use ReflectionMethod;
 use RuntimeException;
 
-/** @internal */
 class ConstructorFactory
 {
     public function __construct(private readonly ParameterFactory $parameterFactory)

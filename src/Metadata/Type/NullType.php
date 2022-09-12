@@ -7,7 +7,6 @@ namespace Guennichi\Mapper\Metadata\Type;
 use Guennichi\Mapper\Context;
 use Guennichi\Mapper\Exception\UnexpectedValueException;
 
-/** @internal */
 class NullType extends Type
 {
     public function __toString(): string
@@ -18,7 +17,7 @@ class NullType extends Type
     public function resolve(mixed $input, Context $context): mixed
     {
         if (null !== $input) {
-            throw new UnexpectedValueException($input, 'null');
+            throw new UnexpectedValueException($input, 'null', $context);
         }
 
         return null;

@@ -6,7 +6,6 @@ namespace Guennichi\Mapper\Metadata\Type;
 
 use Guennichi\Mapper\Context;
 
-/** @internal */
 class MixedType extends Type
 {
     public function __toString(): string

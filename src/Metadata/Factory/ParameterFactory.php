@@ -10,7 +10,6 @@ use Guennichi\Mapper\Metadata\Member\Parameter;
 use ReflectionAttribute;
 use ReflectionParameter;
 
-/** @internal */
 class ParameterFactory
 {
     public function __construct(private readonly ParameterTypeFactory $parameterTypeFactory)

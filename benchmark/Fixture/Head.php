@@ -33,6 +33,7 @@ class Head
                 'paramTwo' => 8060.99,
             ],
         ],
+        'paramSeven' => '2022-06-10',
     ];
 
     /**
@@ -57,6 +58,8 @@ class Head
          * @Type("array<Benchmark\Guennichi\Mapper\Fixture\Child>")
          */
         public readonly array $paramSix = [],
+
+        public readonly ?\DateTimeImmutable $paramSeven = null,
     ) {
     }
 }

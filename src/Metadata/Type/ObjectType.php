@@ -7,7 +7,6 @@ namespace Guennichi\Mapper\Metadata\Type;
 use Guennichi\Mapper\Context;
 use Guennichi\Mapper\Exception\ResolverNotFoundException;
 
-/** @internal */
 class ObjectType extends Type
 {
     public function __construct(public readonly string $classname)

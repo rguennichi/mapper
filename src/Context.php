@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper;
 
+use Guennichi\Mapper\Attribute\Attribute;
 use Guennichi\Mapper\Metadata\Member\Parameter;
 
 class Context
@@ -16,7 +17,6 @@ class Context
     public function __construct(
         private string $classname,
         private ?Parameter $parameter = null,
-        private bool $flexible = false,
     ) {
     }
 
@@ -24,14 +24,12 @@ class Context
     {
         $this->visits[$classname] = [];
         $this->classname = $classname;
-        $this->parameter = null;
     }
 
     public function visitParameter(Parameter $parameter): void
     {
         $this->visits[$this->classname][$parameter->name] = $parameter;
         $this->parameter = $parameter;
-        $this->flexible = $parameter->flexible;
     }
 
     public function classname(): string
@@ -52,8 +50,8 @@ class Context
         return $this->visits;
     }
 
-    public function flexible(): bool
+    public function attribute(string $attribute): ?Attribute
     {
-        return $this->flexible;
+        return $this->parameter?->attributes[$attribute] ?? null;
     }
 }

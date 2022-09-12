@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class ObjectTypeTest extends TestCase
 {
-    public function testStringValue(): void
+    public function testObjectTypeStringValue(): void
     {
         $type = new ObjectType(\stdClass::class);
 

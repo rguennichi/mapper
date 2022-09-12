@@ -49,7 +49,7 @@ class ContextTest extends TestCase
 
         self::assertSame(\Directory::class, $context->classname());
 
-        self::assertNull($context->parameter());
+        self::assertEquals($createParameter('param2'), $context->parameter());
 
         self::assertEquals([
             \stdClass::class => [

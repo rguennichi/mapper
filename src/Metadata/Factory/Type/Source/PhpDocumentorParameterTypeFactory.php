@@ -8,6 +8,7 @@ use Guennichi\Mapper\Metadata\Type\ArrayType;
 use Guennichi\Mapper\Metadata\Type\BooleanType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
+use Guennichi\Mapper\Metadata\Type\DateTimeType;
 use Guennichi\Mapper\Metadata\Type\FloatType;
 use Guennichi\Mapper\Metadata\Type\IntegerType;
 use Guennichi\Mapper\Metadata\Type\NullableType;
@@ -16,6 +17,7 @@ use Guennichi\Mapper\Metadata\Type\ObjectType;
 use Guennichi\Mapper\Metadata\Type\StringType;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
 use phpDocumentor\Reflection\DocBlock\Tags\Param;
+use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\DocBlockFactoryInterface;
 use phpDocumentor\Reflection\Fqsen;
 use phpDocumentor\Reflection\Type;
@@ -34,7 +36,6 @@ use phpDocumentor\Reflection\Types\String_;
 use ReflectionParameter;
 use RuntimeException;
 
-/** @internal */
 class PhpDocumentorParameterTypeFactory implements ParameterTypeFactoryInterface
 {
     private const TAG_NAME = 'param';
@@ -42,10 +43,13 @@ class PhpDocumentorParameterTypeFactory implements ParameterTypeFactoryInterface
     /** @var array<int, array<string, TypeInterface>> */
     private array $params = [];
 
+    private readonly DocBlockFactoryInterface $docBlockFactory;
+
     public function __construct(
-        private readonly DocBlockFactoryInterface $docBlockFactory,
-        private readonly ContextFactory $contextFactory,
+        ?DocBlockFactoryInterface $docBlockFactory = null,
+        private readonly ContextFactory $contextFactory = new ContextFactory(),
     ) {
+        $this->docBlockFactory = $docBlockFactory ?? DocBlockFactory::createInstance();
     }
 
     public function create(ReflectionParameter $reflectionParameter): ?TypeInterface
@@ -132,10 +136,15 @@ class PhpDocumentorParameterTypeFactory implements ParameterTypeFactoryInterface
             return new BooleanType();
         }
 
+        if ($type instanceof Object_) {
+            $classname = $this->getClassname($type->getFqsen());
+
+            return isset(DateTimeType::SUPPORTED_TYPES[$classname]) ? new DateTimeType($classname) : new ObjectType($classname);
+        }
+
         return match ($type::class) {
             Null_::class => new NullType(),
             Float_::class => new FloatType(),
-            Object_::class => new ObjectType($this->getClassname($type->getFqsen())),
             Nullable::class => new NullableType($this->convertType($type->getActualType())),
             default => throw new RuntimeException(sprintf('Type "%s" is not supported', $type::class)),
         };

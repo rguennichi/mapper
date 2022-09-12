@@ -8,6 +8,7 @@ use Guennichi\Mapper\Metadata\Type\ArrayType;
 use Guennichi\Mapper\Metadata\Type\BooleanType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
+use Guennichi\Mapper\Metadata\Type\DateTimeType;
 use Guennichi\Mapper\Metadata\Type\FloatType;
 use Guennichi\Mapper\Metadata\Type\IntegerType;
 use Guennichi\Mapper\Metadata\Type\MixedType;
@@ -23,7 +24,6 @@ use ReflectionUnionType;
 use RuntimeException;
 use Traversable;
 
-/** @internal */
 class ReflectionParameterTypeFactory implements ParameterTypeFactoryInterface
 {
     public function create(ReflectionParameter $reflectionParameter): ?TypeInterface
@@ -56,7 +56,9 @@ class ReflectionParameterTypeFactory implements ParameterTypeFactoryInterface
             if (is_subclass_of($reflectionType->getName(), Traversable::class)) {
                 $type = new CollectionType($reflectionType->getName(), new MixedType());
             } else {
-                $type = new ObjectType($reflectionType->getName());
+                $type = isset(DateTimeType::SUPPORTED_TYPES[$reflectionType->getName()]) ?
+                    new DateTimeType($reflectionType->getName()) :
+                    new ObjectType($reflectionType->getName());
             }
         }
 

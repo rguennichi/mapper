@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Type;
 
-/** @internal */
 abstract class AggregatedType extends Type
 {
     /**

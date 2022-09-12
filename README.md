@@ -8,9 +8,9 @@ Check `benchmark/` directory for more details about the implementation.
 
 | Benchmark          | Revs     | Its | mem_peak    | Mode | rstdev    |
 |--------------------|----------|-----|-------------|------|-----|
-| `cuyz/valinor` | 50000 | 3   | **2.428mb** | 88.361μs     | ±0.97%     |
-| `symfony/serializer` | 50000 | 3   | 3.157mb     |  30.784μs    | ±1.96%    |
-| `guennichi/mapper`   | 50000    | 3   | 2.484mb     | **10.646μs**     |  **±0.75%**   |
+| `cuyz/valinor` | 5000 | 5   | **2.429mb** | 88.915μs     | ±1.24%     |
+| `symfony/serializer` | 5000 | 5   | 3.178mb     |  43.996μs    | ±0.91%    |
+| `guennichi/mapper`   | 5000    | 5   | 2.486mb     | **12.771μs**     |  **±0.89%**   |
 
 
 ## Installation
