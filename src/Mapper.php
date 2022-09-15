@@ -26,15 +26,11 @@ class Mapper implements MapperInterface
 {
     private readonly ConstructorFetcher $constructorFetcher;
 
-    /**
-     * @param iterable<ResolverInterface> $resolvers
-     */
     public function __construct(
         ConstructorRepositoryInterface $constructorRepository = new ConstructorInMemoryRepository(),
         ParameterTypeFactoryInterface $phpDocParameterTypeFactory = new PhpDocumentorParameterTypeFactory(),
         ParameterTypeFactoryInterface $reflectionParameterTypeFactory = new ReflectionParameterTypeFactory(),
         ?ConstructorFetcher $constructorFetcher = null,
-        private readonly iterable $resolvers = [],
     ) {
         $this->constructorFetcher = $constructorFetcher ?? new ConstructorFetcher(
             new ConstructorFactory(
@@ -61,15 +57,6 @@ class Mapper implements MapperInterface
 
     private function resolve(mixed $input, TypeInterface $type, Context $context): mixed
     {
-        // Prioritize custom resolvers
-        foreach ($this->resolvers as $resolver) {
-            if (!$resolver->supports($type)) {
-                continue;
-            }
-
-            return $resolver->resolve($input, $type, $context);
-        }
-
         return match ($type::class) {
             default => $type->resolve($input, $context),
             ObjectType::class => $this->resolveObject($input, $type, $context),
