@@ -13,15 +13,16 @@ class ConstructorInMemoryRepository implements ConstructorRepositoryInterface
 
     public function add(Constructor $constructor): void
     {
-        if (isset($this->constructors[$constructor->classname])) {
-            return;
-        }
-
         $this->constructors[$constructor->classname] = $constructor;
     }
 
     public function get(string $classname): ?Constructor
     {
         return $this->constructors[$classname] ?? null;
+    }
+
+    public function clear(): void
+    {
+        $this->constructors = [];
     }
 }

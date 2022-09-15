@@ -6,11 +6,11 @@ A lightweight library to map array data into PHP **immutable objects, collection
 
 Check `benchmark/` directory for more details about the implementation.
 
-| Benchmark          | Revs     | Its | mem_peak    | Mode | rstdev    |
-|--------------------|----------|-----|-------------|------|-----|
-| `cuyz/valinor` | 5000 | 5   | **2.429mb** | 88.915μs     | ±1.24%     |
-| `symfony/serializer` | 5000 | 5   | 3.178mb     |  43.996μs    | ±0.91%    |
-| `guennichi/mapper`   | 5000    | 5   | 2.486mb     | **12.771μs**     |  **±0.89%**   |
+| Benchmark          | Revs     | Its | mem_peak | Mode | rstdev     |
+|--------------------|----------|-----|---------|------|------------|
+| `cuyz/valinor` | 5000 | 5   | 2.429mb | 92.058μs     | ±1.38%     |
+| `symfony/serializer` | 5000 | 5   | 3.178mb |  45.425μs    | **±0.81%** |
+| `guennichi/mapper`   | 5000    | 5   | **1.622mb** | **12.407μs**     | **±0.81%** |
 
 
 ## Installation

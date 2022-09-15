@@ -11,4 +11,6 @@ interface ConstructorRepositoryInterface
     public function add(Constructor $constructor): void;
 
     public function get(string $classname): ?Constructor;
+
+    public function clear(): void;
 }
