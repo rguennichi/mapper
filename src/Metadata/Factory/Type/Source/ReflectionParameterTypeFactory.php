@@ -55,10 +55,10 @@ class ReflectionParameterTypeFactory implements ParameterTypeFactoryInterface
             // Here maybe we need to check if the class is instance of some collection interface, and we could extract its information from @template tag.
             if (is_subclass_of($reflectionType->getName(), Traversable::class)) {
                 $type = new CollectionType($reflectionType->getName(), new MixedType());
+            } elseif (\DateTimeInterface::class === $reflectionType->getName() || is_subclass_of($reflectionType->getName(), \DateTimeInterface::class)) {
+                $type = new DateTimeType($reflectionType->getName());
             } else {
-                $type = isset(DateTimeType::SUPPORTED_TYPES[$reflectionType->getName()]) ?
-                    new DateTimeType($reflectionType->getName()) :
-                    new ObjectType($reflectionType->getName());
+                $type = new ObjectType($reflectionType->getName());
             }
         }
 

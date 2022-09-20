@@ -139,7 +139,11 @@ class PhpDocumentorParameterTypeFactory implements ParameterTypeFactoryInterface
         if ($type instanceof Object_) {
             $classname = $this->getClassname($type->getFqsen());
 
-            return isset(DateTimeType::SUPPORTED_TYPES[$classname]) ? new DateTimeType($classname) : new ObjectType($classname);
+            if (is_subclass_of($classname, \DateTimeInterface::class)) {
+                return new DateTimeType($classname);
+            }
+
+            return new ObjectType($classname);
         }
 
         return match ($type::class) {

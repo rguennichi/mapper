@@ -11,6 +11,7 @@ use Guennichi\Mapper\Metadata\Type\ArrayType;
 use Guennichi\Mapper\Metadata\Type\BooleanType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
+use Guennichi\Mapper\Metadata\Type\DateTimeType;
 use Guennichi\Mapper\Metadata\Type\FloatType;
 use Guennichi\Mapper\Metadata\Type\IntegerType;
 use Guennichi\Mapper\Metadata\Type\MixedType;
@@ -104,6 +105,14 @@ class ReflectionParameterTypeFactoryTest extends TestCase
                     }
                 }),
                 new ObjectType(stdClass::class),
+            ],
+            'datetime_type' => [
+                $this->createReflectionParameter(new class() {
+                    public function __construct(public readonly \DateTimeInterface $param = new \DateTimeImmutable())
+                    {
+                    }
+                }),
+                new DateTimeType(\DateTimeInterface::class),
             ],
             'nullable_type' => [
                 $this->createReflectionParameter(new class() {

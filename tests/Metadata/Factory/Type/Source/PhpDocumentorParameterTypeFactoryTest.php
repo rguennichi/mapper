@@ -10,6 +10,7 @@ use Guennichi\Mapper\Metadata\Type\ArrayType;
 use Guennichi\Mapper\Metadata\Type\BooleanType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
+use Guennichi\Mapper\Metadata\Type\DateTimeType;
 use Guennichi\Mapper\Metadata\Type\FloatType;
 use Guennichi\Mapper\Metadata\Type\IntegerType;
 use Guennichi\Mapper\Metadata\Type\NullableType;
@@ -122,6 +123,17 @@ class PhpDocumentorParameterTypeFactoryTest extends TestCase
                     }
                 }),
                 new ObjectType(stdClass::class),
+            ],
+            'datetime_type' => [
+                $this->createReflectionParameter(new class() {
+                    /**
+                     * @param \DateTimeImmutable $param
+                     */
+                    public function __construct(public $param = new \DateTimeImmutable())
+                    {
+                    }
+                }),
+                new DateTimeType(\DateTimeImmutable::class),
             ],
             'nullable_type' => [
                 $this->createReflectionParameter(new class() {

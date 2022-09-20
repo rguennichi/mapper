@@ -10,16 +10,18 @@ use Guennichi\Mapper\Exception\UnexpectedValueException;
 
 class DateTimeType extends ObjectType
 {
-    public const SUPPORTED_TYPES = [
-        \DateTimeInterface::class => true,
-        \DateTimeImmutable::class => true,
-        \DateTime::class => true,
-    ];
-
+    /**
+     * @param class-string<\DateTimeInterface> $classname
+     */
     public function __construct(string $classname)
     {
-        if (!isset(self::SUPPORTED_TYPES[$classname])) {
-            throw new \RuntimeException(sprintf('Expecting "%s", "%s" given', implode('|', array_keys(self::SUPPORTED_TYPES)), $classname));
+        if (
+            \DateTimeInterface::class !== $classname &&
+            !\in_array($classname, [\DateTime::class, \DateTimeImmutable::class]) &&
+            !is_subclass_of($classname, \DateTime::class) &&
+            !is_subclass_of($classname, \DateTimeImmutable::class)
+        ) {
+            throw new \RuntimeException(sprintf('Expecting instance of "%s", "%s" given', \DateTimeInterface::class, $classname));
         }
 
         parent::__construct($classname);
@@ -37,10 +39,10 @@ class DateTimeType extends ObjectType
             throw new UnexpectedValueException($input, 'string', $context);
         }
 
+        $classname = \DateTimeInterface::class === $this->classname ? \DateTimeImmutable::class : $this->classname;
         $dateTimeFormat = $context->attribute(DateTimeFormat::class)?->format ?? null;
         if (null !== $dateTimeFormat) {
-            $object = \DateTime::class === $this->classname ? \DateTime::createFromFormat($dateTimeFormat, $input) : \DateTimeImmutable::createFromFormat($dateTimeFormat, $input);
-            if (false === $object) {
+            if (false === $object = $classname::createFromFormat($dateTimeFormat, $input)) {
                 throw new UnexpectedValueException(false, $this->classname, $context);
             }
 
@@ -48,9 +50,9 @@ class DateTimeType extends ObjectType
         }
 
         try {
-            return \DateTime::class === $this->classname ? new \DateTime($input) : new \DateTimeImmutable($input);
+            return new $classname($input);
         } catch (\Exception) {
-            throw new UnexpectedValueException($input, $this->classname, $context);
+            throw new UnexpectedValueException($input, $classname, $context);
         }
     }
 }
