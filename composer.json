@@ -27,7 +27,8 @@
         "phpbench/phpbench": "^1.2",
         "symfony/property-access": "^6.1",
         "symfony/property-info": "^6.1",
-        "cuyz/valinor": "^0.14.0"
+        "cuyz/valinor": "^0.14.0",
+        "symfony/var-exporter": "^6.1"
     },
     "autoload": {
         "psr-4": {

@@ -51,3 +51,7 @@ $mapper = new Guennichi\Mapper\Mapper(/** dependencies */)
 $output = $mapper->map($input, PersonCollection::class);
 // Result instance of PersonCollection(Person{"name": "Person1"}, Person{"name": "Person2"}, Person{"name": "Person3"})
 ```
+
+### Dedication
+
+Special thanks to my colleague [@Gabriel Ostrolucký](https://github.com/ostrolucky) for his support and advices to make this happen.

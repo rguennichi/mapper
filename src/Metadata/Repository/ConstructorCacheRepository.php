@@ -37,7 +37,7 @@ class ConstructorCacheRepository implements ConstructorRepositoryInterface
             /* @phpstan-ignore-next-line */
             $this->cachedConstructors = [];
             // Create the cache file if not found
-            $this->filesystem->dumpFile($this->cacheFile, "<?php\nreturn [\n\t//\n];");
+            $this->dumpCacheFile("<?php\nreturn [\n\t//\n];");
         }
     }
 
@@ -50,8 +50,7 @@ class ConstructorCacheRepository implements ConstructorRepositoryInterface
             return;
         }
 
-        $this->filesystem->dumpFile(
-            $this->cacheFile,
+        $this->dumpCacheFile(
             str_replace(
                 '//',
                 sprintf(
@@ -79,6 +78,16 @@ class ConstructorCacheRepository implements ConstructorRepositoryInterface
         $this->inMemoryRepository->add($constructor = $closure());
 
         return $constructor;
+    }
+
+    private function dumpCacheFile(string $content): void
+    {
+        $this->filesystem->dumpFile($this->cacheFile, $content);
+
+        // Compile cached file into bytecode cache
+        if (\function_exists('opcache_invalidate')) {
+            @opcache_invalidate($this->cacheFile, true);
+        }
     }
 
     private function generateConstructorCode(Constructor $constructor): string
