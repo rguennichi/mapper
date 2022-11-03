@@ -9,8 +9,6 @@ use Guennichi\Mapper\Metadata\Type\CompoundType;
 use Guennichi\Mapper\Metadata\Type\ListType;
 use Guennichi\Mapper\Metadata\Type\NullableType;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
-use ReflectionParameter;
-use RuntimeException;
 
 class ParameterTypeFactory
 {
@@ -20,7 +18,7 @@ class ParameterTypeFactory
     ) {
     }
 
-    public function create(ReflectionParameter $reflectionParameter): TypeInterface
+    public function create(\ReflectionParameter $reflectionParameter): TypeInterface
     {
         $type = $this->reflectionTypeFactory->create($reflectionParameter);
 

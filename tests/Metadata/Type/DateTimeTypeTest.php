@@ -16,7 +16,6 @@ class DateTimeTypeTest extends TestCase
         $customDateTime = (new DateTimeType($class::class))->resolve('2021-09-26', $this->createMock(Context::class));
 
         self::assertInstanceOf($class::class, $customDateTime);
-        /* @phpstan-ignore-next-line */
         self::assertSame('2021-09-26', $customDateTime->format('Y-m-d'));
     }
 

@@ -20,7 +20,6 @@ use Guennichi\Mapper\Metadata\Type\StringType;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use ReflectionParameter;
 
 class ParameterTypeFactoryTest extends TestCase
 {
@@ -94,7 +93,7 @@ class ParameterTypeFactoryTest extends TestCase
         $this->docBlockTypeFactory->expects($this->never())
             ->method('create');
 
-        self::assertSame($type, $this->parameterTypeFactory->create($this->createMock(ReflectionParameter::class)));
+        self::assertSame($type, $this->parameterTypeFactory->create($this->createMock(\ReflectionParameter::class)));
     }
 
     /**

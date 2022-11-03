@@ -17,28 +17,22 @@ use Guennichi\Mapper\Metadata\Type\NullType;
 use Guennichi\Mapper\Metadata\Type\ObjectType;
 use Guennichi\Mapper\Metadata\Type\StringType;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
-use ReflectionNamedType;
-use ReflectionParameter;
-use ReflectionType;
-use ReflectionUnionType;
-use RuntimeException;
-use Traversable;
 
 class ReflectionParameterTypeFactory implements ParameterTypeFactoryInterface
 {
-    public function create(ReflectionParameter $reflectionParameter): ?TypeInterface
+    public function create(\ReflectionParameter $reflectionParameter): ?TypeInterface
     {
         return $this->createType($reflectionParameter->getType());
     }
 
-    private function createType(?ReflectionType $reflectionType): TypeInterface
+    private function createType(?\ReflectionType $reflectionType): TypeInterface
     {
-        if ($reflectionType instanceof ReflectionUnionType) {
+        if ($reflectionType instanceof \ReflectionUnionType) {
             return new CompoundType(...array_map($this->createType(...), $reflectionType->getTypes()));
         }
 
-        if (!$reflectionType instanceof ReflectionNamedType) {
-            throw new RuntimeException(sprintf('Type "%s" is not supported', $reflectionType ? $reflectionType::class : 'unknown'));
+        if (!$reflectionType instanceof \ReflectionNamedType) {
+            throw new \RuntimeException(sprintf('Type "%s" is not supported', $reflectionType ? $reflectionType::class : 'unknown'));
         }
 
         if ($reflectionType->isBuiltin()) {
@@ -49,11 +43,11 @@ class ReflectionParameterTypeFactory implements ParameterTypeFactoryInterface
                 'float' => new FloatType(),
                 'null' => new NullType(),
                 'array' => new ArrayType(new IntegerType(), new MixedType()),
-                default => throw new RuntimeException(sprintf('Type "%s" is not supported', $reflectionType->getName())),
+                default => throw new \RuntimeException(sprintf('Type "%s" is not supported', $reflectionType->getName())),
             };
         } else {
             // Here maybe we need to check if the class is instance of some collection interface, and we could extract its information from @template tag.
-            if (is_subclass_of($reflectionType->getName(), Traversable::class)) {
+            if (is_subclass_of($reflectionType->getName(), \Traversable::class)) {
                 $type = new CollectionType($reflectionType->getName(), new MixedType());
             } elseif (\DateTimeInterface::class === $reflectionType->getName() || is_subclass_of($reflectionType->getName(), \DateTimeInterface::class)) {
                 $type = new DateTimeType($reflectionType->getName());

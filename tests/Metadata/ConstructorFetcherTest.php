@@ -10,7 +10,6 @@ use Guennichi\Mapper\Metadata\Member\Constructor;
 use Guennichi\Mapper\Metadata\Repository\ConstructorRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 class ConstructorFetcherTest extends TestCase
 {
@@ -32,13 +31,13 @@ class ConstructorFetcherTest extends TestCase
 
         $this->constructorRepository->expects($this->once())
             ->method('get')
-            ->with(stdClass::class)
+            ->with(\stdClass::class)
             ->willReturn($constructor);
 
         $this->constructorFactory->expects($this->never())
             ->method('create');
 
-        self::assertSame($constructor, $this->constructorFetcher->fetch(stdClass::class));
+        self::assertSame($constructor, $this->constructorFetcher->fetch(\stdClass::class));
     }
 
     public function testItCreatesConstructorObjectFromFactoryAndAddItToRepositoryIfDoesNotExists(): void
@@ -47,7 +46,7 @@ class ConstructorFetcherTest extends TestCase
 
         $this->constructorRepository->expects($this->once())
             ->method('get')
-            ->with(stdClass::class)
+            ->with(\stdClass::class)
             ->willReturn(null);
 
         $this->constructorFactory->expects($this->once())
@@ -58,6 +57,6 @@ class ConstructorFetcherTest extends TestCase
             ->method('add')
             ->with($constructor);
 
-        self::assertSame($constructor, $this->constructorFetcher->fetch(stdClass::class));
+        self::assertSame($constructor, $this->constructorFetcher->fetch(\stdClass::class));
     }
 }
