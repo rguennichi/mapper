@@ -20,7 +20,6 @@ use Guennichi\Mapper\Metadata\Type\StringType;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use ReflectionParameter;
 
 class ParameterTypeFactoryTest extends TestCase
 {
@@ -49,7 +48,21 @@ class ParameterTypeFactoryTest extends TestCase
             ->method('create')
             ->willReturn($docBlockFactoryResult = clone $type);
 
-        self::assertSame($docBlockFactoryResult, $this->parameterTypeFactory->create($this->createMock(ReflectionParameter::class)));
+        self::assertSame($docBlockFactoryResult, $this->parameterTypeFactory->create($this->createMock(\ReflectionParameter::class)));
+    }
+
+    public function testItThrowsWhenUnableToExtractType(): void
+    {
+        self::expectException(\RuntimeException::class);
+        self::expectExceptionMessage('Unable to extract type in "class@anonymous');
+        $unguessable = new class([]) {
+            /** @phpstan-ignore-next-line  */
+            public function __construct(public array $array)
+            {
+            }
+        };
+
+        $this->parameterTypeFactory->create(new \ReflectionParameter($unguessable->__construct(...), 'array'));
     }
 
     /**
@@ -80,7 +93,7 @@ class ParameterTypeFactoryTest extends TestCase
         $this->docBlockTypeFactory->expects($this->never())
             ->method('create');
 
-        self::assertSame($type, $this->parameterTypeFactory->create($this->createMock(ReflectionParameter::class)));
+        self::assertSame($type, $this->parameterTypeFactory->create($this->createMock(\ReflectionParameter::class)));
     }
 
     /**

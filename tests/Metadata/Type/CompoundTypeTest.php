@@ -12,7 +12,6 @@ use Guennichi\Mapper\Metadata\Type\NullType;
 use Guennichi\Mapper\Metadata\Type\ObjectType;
 use Guennichi\Mapper\Metadata\Type\StringType;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 class CompoundTypeTest extends TestCase
 {
@@ -25,7 +24,7 @@ class CompoundTypeTest extends TestCase
 
     public function testStringValue(): void
     {
-        $type = new CompoundType(new NullType(), new StringType(), new BooleanType(), new ObjectType(stdClass::class));
+        $type = new CompoundType(new NullType(), new StringType(), new BooleanType(), new ObjectType(\stdClass::class));
 
         self::assertSame('null|string|bool|stdClass', $type->__toString());
     }

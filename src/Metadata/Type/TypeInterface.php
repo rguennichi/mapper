@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Guennichi\Mapper\Metadata\Type;
 
 use Guennichi\Mapper\Context;
-use Stringable;
 
-interface TypeInterface extends Stringable
+interface TypeInterface extends \Stringable
 {
     /**
      * @throws \TypeError

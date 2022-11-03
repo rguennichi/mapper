@@ -10,7 +10,6 @@ use Guennichi\Mapper\Metadata\Member\Parameter;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use ReflectionParameter;
 use Tests\Guennichi\Mapper\Fixture\Attribute\External;
 use Tests\Guennichi\Mapper\Fixture\Attribute\Internal;
@@ -30,7 +29,7 @@ class ParameterFactoryTest extends TestCase
     /**
      * @dataProvider factoryDataProvider
      */
-    public function testItCreatesParameterInstance(ReflectionParameter $reflectionParameter, Parameter $expectedResult): void
+    public function testItCreatesParameterInstance(\ReflectionParameter $reflectionParameter, Parameter $expectedResult): void
     {
         $this->typeFactory->expects($this->once())
             ->method('create')
@@ -139,8 +138,8 @@ class ParameterFactoryTest extends TestCase
         ];
     }
 
-    private function createReflectionParameter(object $object): ?ReflectionParameter
+    private function createReflectionParameter(object $object): ?\ReflectionParameter
     {
-        return (new ReflectionClass($object))->getConstructor()?->getParameters()[0];
+        return (new \ReflectionClass($object))->getConstructor()?->getParameters()[0];
     }
 }

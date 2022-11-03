@@ -9,8 +9,6 @@ use Guennichi\Mapper\Metadata\Member\Constructor;
 use Guennichi\Mapper\Metadata\Member\Parameter;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\ObjectType;
-use ReflectionMethod;
-use RuntimeException;
 
 class ConstructorFactory
 {
@@ -20,7 +18,7 @@ class ConstructorFactory
 
     public function create(string $classname): Constructor
     {
-        $reflectionConstructor = new ReflectionMethod($classname, '__construct');
+        $reflectionConstructor = new \ReflectionMethod($classname, '__construct');
 
         $parameters = [];
         foreach ($reflectionConstructor->getParameters() as $reflectionParameter) {
@@ -40,7 +38,7 @@ class ConstructorFactory
         }
 
         if (1 !== \count($parameters)) {
-            throw new RuntimeException(sprintf('Collection should have exactly one parameter in constructor in order to know its value type, "%d" given', \count($parameters)));
+            throw new \RuntimeException(sprintf('Collection should have exactly one parameter in constructor in order to know its value type, "%d" given', \count($parameters)));
         }
 
         return new CollectionType($classname, $parameters[0]->type);

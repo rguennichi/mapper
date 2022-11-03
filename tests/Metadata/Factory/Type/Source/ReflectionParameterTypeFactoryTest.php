@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Guennichi\Mapper\Metadata\Factory\Type\Source;
 
-use ArrayIterator;
-use Countable;
 use Guennichi\Mapper\Metadata\Factory\Type\Source\ReflectionParameterTypeFactory;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
 use Guennichi\Mapper\Metadata\Type\BooleanType;
@@ -20,12 +18,8 @@ use Guennichi\Mapper\Metadata\Type\NullType;
 use Guennichi\Mapper\Metadata\Type\ObjectType;
 use Guennichi\Mapper\Metadata\Type\StringType;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
-use Iterator;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
-use ReflectionIntersectionType;
 use ReflectionParameter;
-use stdClass;
 
 class ReflectionParameterTypeFactoryTest extends TestCase
 {
@@ -37,7 +31,7 @@ class ReflectionParameterTypeFactoryTest extends TestCase
     }
 
     /** @dataProvider validReflectionTypesDataProvider */
-    public function testItCreatesInternalTypeFromReflection(ReflectionParameter $reflectionParameter, TypeInterface $expectedType): void
+    public function testItCreatesInternalTypeFromReflection(\ReflectionParameter $reflectionParameter, TypeInterface $expectedType): void
     {
         self::assertEquals($expectedType, $this->typeFactory->create($reflectionParameter));
     }
@@ -91,20 +85,20 @@ class ReflectionParameterTypeFactoryTest extends TestCase
             ],
             'collection_type' => [
                 $this->createReflectionParameter(new class() {
-                    /** @param ArrayIterator<int, string> $param */
-                    public function __construct(public readonly ArrayIterator $param = new ArrayIterator([]))
+                    /** @param \ArrayIterator<int, string> $param */
+                    public function __construct(public readonly \ArrayIterator $param = new \ArrayIterator([]))
                     {
                     }
                 }),
-                new CollectionType(ArrayIterator::class, new MixedType()),
+                new CollectionType(\ArrayIterator::class, new MixedType()),
             ],
             'object_type' => [
                 $this->createReflectionParameter(new class() {
-                    public function __construct(public readonly stdClass $param = new stdClass())
+                    public function __construct(public readonly \stdClass $param = new \stdClass())
                     {
                     }
                 }),
-                new ObjectType(stdClass::class),
+                new ObjectType(\stdClass::class),
             ],
             'datetime_type' => [
                 $this->createReflectionParameter(new class() {
@@ -116,11 +110,11 @@ class ReflectionParameterTypeFactoryTest extends TestCase
             ],
             'nullable_type' => [
                 $this->createReflectionParameter(new class() {
-                    public function __construct(public readonly ?stdClass $param = null)
+                    public function __construct(public readonly ?\stdClass $param = null)
                     {
                     }
                 }),
-                new NullableType(new ObjectType(stdClass::class)),
+                new NullableType(new ObjectType(\stdClass::class)),
             ],
             'compound_type' => [
                 $this->createReflectionParameter(new class() {
@@ -134,7 +128,7 @@ class ReflectionParameterTypeFactoryTest extends TestCase
     }
 
     /** @dataProvider invalidReflectionTypesDataProvider */
-    public function testItThrowsAnExceptionWhenInvalidTypeIsProvided(ReflectionParameter $reflectionParameter, string $expectedExceptionMessage): void
+    public function testItThrowsAnExceptionWhenInvalidTypeIsProvided(\ReflectionParameter $reflectionParameter, string $expectedExceptionMessage): void
     {
         self::expectExceptionMessage($expectedExceptionMessage);
 
@@ -149,17 +143,17 @@ class ReflectionParameterTypeFactoryTest extends TestCase
         return [
             'intersection_type' => [
                 $this->createReflectionParameter(new class() {
-                    public function __construct(public readonly Iterator&Countable $param = new ArrayIterator())
+                    public function __construct(public readonly \Iterator&\Countable $param = new \ArrayIterator())
                     {
                     }
                 }),
-                sprintf('Type "%s" is not supported', ReflectionIntersectionType::class),
+                sprintf('Type "%s" is not supported', \ReflectionIntersectionType::class),
             ],
         ];
     }
 
-    private function createReflectionParameter(object $object): ?ReflectionParameter
+    private function createReflectionParameter(object $object): ?\ReflectionParameter
     {
-        return (new ReflectionClass($object))->getConstructor()?->getParameters()[0];
+        return (new \ReflectionClass($object))->getConstructor()?->getParameters()[0];
     }
 }

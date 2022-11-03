@@ -8,7 +8,6 @@ use Guennichi\Mapper\Metadata\Member\Constructor;
 use Guennichi\Mapper\Metadata\Repository\ConstructorInMemoryRepository;
 use Guennichi\Mapper\Metadata\Type\ObjectType;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 class InMemoryConstructorRepositoryTest extends TestCase
 {
@@ -21,15 +20,15 @@ class InMemoryConstructorRepositoryTest extends TestCase
 
     public function testItAddsConstructorOnlyOnce(): void
     {
-        $constructor = new Constructor(stdClass::class, $this->createMock(ObjectType::class), []);
+        $constructor = new Constructor(\stdClass::class, $this->createMock(ObjectType::class), []);
 
         $this->inMemoryConstructorRepository->add($constructor);
 
-        self::assertSame($constructor, $this->inMemoryConstructorRepository->get(stdClass::class));
+        self::assertSame($constructor, $this->inMemoryConstructorRepository->get(\stdClass::class));
     }
 
     public function testItReturnsNullIfNoConstructorFound(): void
     {
-        self::assertNull($this->inMemoryConstructorRepository->get(stdClass::class));
+        self::assertNull($this->inMemoryConstructorRepository->get(\stdClass::class));
     }
 }

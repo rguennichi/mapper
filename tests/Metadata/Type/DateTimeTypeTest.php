@@ -16,7 +16,6 @@ class DateTimeTypeTest extends TestCase
         $customDateTime = (new DateTimeType($class::class))->resolve('2021-09-26', $this->createMock(Context::class));
 
         self::assertInstanceOf($class::class, $customDateTime);
-        /* @phpstan-ignore-next-line */
         self::assertSame('2021-09-26', $customDateTime->format('Y-m-d'));
     }
 
@@ -30,11 +29,8 @@ class DateTimeTypeTest extends TestCase
         self::assertInstanceOf(\DateTimeImmutable::class, $immutableDateTime);
         self::assertInstanceOf(\DateTimeImmutable::class, $interfaceDateTime);
 
-        /* @phpstan-ignore-next-line */
         self::assertSame('2021-09-26', $mutableDateTime->format('Y-m-d'));
-        /* @phpstan-ignore-next-line */
         self::assertSame('2021-09-26', $immutableDateTime->format('Y-m-d'));
-        /* @phpstan-ignore-next-line */
         self::assertSame('2021-09-26', $interfaceDateTime->format('Y-m-d'));
     }
 

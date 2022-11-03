@@ -10,7 +10,6 @@ use Guennichi\Mapper\Metadata\Type\ListType;
 use Guennichi\Mapper\Metadata\Type\ObjectType;
 use Guennichi\Mapper\Metadata\Type\StringType;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 class ArrayTypeTest extends TestCase
 {
@@ -27,7 +26,7 @@ class ArrayTypeTest extends TestCase
             new IntegerType(),
             new ArrayType(
                 new StringType(),
-                new ObjectType(stdClass::class),
+                new ObjectType(\stdClass::class),
             ),
         );
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Guennichi\Mapper\Metadata\Factory\Type\Source;
 
-use ArrayIterator;
 use Guennichi\Mapper\Metadata\Factory\Type\Source\PhpDocumentorParameterTypeFactory;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
 use Guennichi\Mapper\Metadata\Type\BooleanType;
@@ -23,9 +22,7 @@ use phpDocumentor\Reflection\Types\ContextFactory;
 use phpDocumentor\Reflection\Types\Intersection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 use ReflectionParameter;
-use stdClass;
 
 class PhpDocumentorParameterTypeFactoryTest extends TestCase
 {
@@ -40,7 +37,7 @@ class PhpDocumentorParameterTypeFactoryTest extends TestCase
     }
 
     /** @dataProvider validPhpDocTypesDataProvider */
-    public function testItCreatesInternalTypeFromReflection(ReflectionParameter $reflectionParameter, TypeInterface $expectedType): void
+    public function testItCreatesInternalTypeFromReflection(\ReflectionParameter $reflectionParameter, TypeInterface $expectedType): void
     {
         self::assertEquals($expectedType, $this->typeFactory->create($reflectionParameter));
     }
@@ -106,23 +103,23 @@ class PhpDocumentorParameterTypeFactoryTest extends TestCase
             ],
             'collection_type' => [
                 $this->createReflectionParameter(new class() {
-                    /** @param ArrayIterator<int, stdClass> $param */
-                    public function __construct(public $param = new ArrayIterator([]))
+                    /** @param \ArrayIterator<int, \stdClass> $param */
+                    public function __construct(public $param = new \ArrayIterator([]))
                     {
                     }
                 }),
-                new CollectionType(ArrayIterator::class, new ObjectType(stdClass::class)),
+                new CollectionType(\ArrayIterator::class, new ObjectType(\stdClass::class)),
             ],
             'object_type' => [
                 $this->createReflectionParameter(new class() {
                     /**
-                     * @param stdClass $param
+                     * @param \stdClass $param
                      */
-                    public function __construct(public $param = new stdClass())
+                    public function __construct(public $param = new \stdClass())
                     {
                     }
                 }),
-                new ObjectType(stdClass::class),
+                new ObjectType(\stdClass::class),
             ],
             'datetime_type' => [
                 $this->createReflectionParameter(new class() {
@@ -138,13 +135,13 @@ class PhpDocumentorParameterTypeFactoryTest extends TestCase
             'nullable_type' => [
                 $this->createReflectionParameter(new class() {
                     /**
-                     * @param ?stdClass $param
+                     * @param ?\stdClass $param
                      */
                     public function __construct(public $param = null)
                     {
                     }
                 }),
-                new NullableType(new ObjectType(stdClass::class)),
+                new NullableType(new ObjectType(\stdClass::class)),
             ],
             'compound_type' => [
                 $this->createReflectionParameter(new class() {
@@ -161,7 +158,7 @@ class PhpDocumentorParameterTypeFactoryTest extends TestCase
     }
 
     /** @dataProvider invalidPhpDocTypesDataProvider */
-    public function testItThrowsAnExceptionWhenInvalidTypeIsProvided(ReflectionParameter $reflectionParameter, string $expectedExceptionMessage): void
+    public function testItThrowsAnExceptionWhenInvalidTypeIsProvided(\ReflectionParameter $reflectionParameter, string $expectedExceptionMessage): void
     {
         self::expectExceptionMessage($expectedExceptionMessage);
 
@@ -177,7 +174,7 @@ class PhpDocumentorParameterTypeFactoryTest extends TestCase
             'intersection_type' => [
                 $this->createReflectionParameter(new class() {
                     /**
-                     * @param stdClass&MockObject $param
+                     * @param \stdClass&MockObject $param
                      */
                     public function __construct(public $param = null)
                     {
@@ -201,8 +198,8 @@ class PhpDocumentorParameterTypeFactoryTest extends TestCase
         ];
     }
 
-    private function createReflectionParameter(object $object): ?ReflectionParameter
+    private function createReflectionParameter(object $object): ?\ReflectionParameter
     {
-        return (new ReflectionClass($object))->getConstructor()?->getParameters()[0];
+        return (new \ReflectionClass($object))->getConstructor()?->getParameters()[0];
     }
 }

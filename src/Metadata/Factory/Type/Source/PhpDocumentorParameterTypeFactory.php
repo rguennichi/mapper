@@ -33,8 +33,6 @@ use phpDocumentor\Reflection\Types\Null_;
 use phpDocumentor\Reflection\Types\Nullable;
 use phpDocumentor\Reflection\Types\Object_;
 use phpDocumentor\Reflection\Types\String_;
-use ReflectionParameter;
-use RuntimeException;
 
 class PhpDocumentorParameterTypeFactory implements ParameterTypeFactoryInterface
 {
@@ -52,7 +50,7 @@ class PhpDocumentorParameterTypeFactory implements ParameterTypeFactoryInterface
         $this->docBlockFactory = $docBlockFactory ?? DocBlockFactory::createInstance();
     }
 
-    public function create(ReflectionParameter $reflectionParameter): ?TypeInterface
+    public function create(\ReflectionParameter $reflectionParameter): ?TypeInterface
     {
         if (!$docComment = $reflectionParameter->getDeclaringFunction()->getDocComment()) {
             return null;
@@ -115,12 +113,12 @@ class PhpDocumentorParameterTypeFactory implements ParameterTypeFactoryInterface
                     match ($keyType::class) {
                         Integer::class, Compound::class => new IntegerType(),
                         String_::class => new StringType(),
-                        default => throw new RuntimeException('Invalid key type "%s' . $keyType::class . '"'),
+                        default => throw new \RuntimeException('Invalid key type "%s' . $keyType::class . '"'),
                     },
                     $this->convertType($type->getValueType()),
                 ),
                 Collection::class => new CollectionType($this->getClassname($type->getFqsen()), $this->convertType($type->getValueType())),
-                default => throw new RuntimeException(sprintf('List of type "%s" is not supported', $type->__toString())),
+                default => throw new \RuntimeException(sprintf('List of type "%s" is not supported', $type->__toString())),
             };
         }
 
@@ -150,7 +148,7 @@ class PhpDocumentorParameterTypeFactory implements ParameterTypeFactoryInterface
             Null_::class => new NullType(),
             Float_::class => new FloatType(),
             Nullable::class => new NullableType($this->convertType($type->getActualType())),
-            default => throw new RuntimeException(sprintf('Type "%s" is not supported', $type::class)),
+            default => throw new \RuntimeException(sprintf('Type "%s" is not supported', $type::class)),
         };
     }
 
