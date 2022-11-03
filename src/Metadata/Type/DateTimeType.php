@@ -35,6 +35,11 @@ class DateTimeType extends ObjectType
 
         $context->visitClassname($this->classname);
 
+        // json_encode(new DateTime()) format support
+        if (\is_array($input) && isset($input['date'])) {
+            $input = $input['date'];
+        }
+
         if (!\is_string($input)) {
             throw new UnexpectedValueException($input, 'string', $context);
         }

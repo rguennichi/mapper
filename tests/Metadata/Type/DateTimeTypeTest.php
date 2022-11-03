@@ -20,22 +20,20 @@ class DateTimeTypeTest extends TestCase
         self::assertSame('2021-09-26', $customDateTime->format('Y-m-d'));
     }
 
-    public function testItResolvesNativeDateTimeTypes(): void
+    /**
+     * @testWith ["2021-09-26", "DateTime", "2021-09-26"]
+     *           ["2021-09-26", "DateTimeImmutable", "2021-09-26"]
+     *           ["2021-09-26", "DateTimeInterface", "2021-09-26"]
+     *           ["2021-09-26", "DateTimeInterface", {"date":"2021-09-26 00:00:00.000000","timezone_type":3,"timezone":"UTC"}]
+     *
+     * @param class-string<\DateTimeInterface> $type
+     */
+    public function testItResolvesNativeDateTimeTypes(string $expected, string $type, mixed $input): void
     {
-        $mutableDateTime = (new DateTimeType(\DateTime::class))->resolve('2021-09-26', $this->createMock(Context::class));
-        $immutableDateTime = (new DateTimeType(\DateTimeImmutable::class))->resolve('2021-09-26', $this->createMock(Context::class));
-        $interfaceDateTime = (new DateTimeType(\DateTimeInterface::class))->resolve('2021-09-26', $this->createMock(Context::class));
+        $dateTime = (new DateTimeType($type))->resolve($input, $this->createMock(Context::class));
 
-        self::assertInstanceOf(\DateTime::class, $mutableDateTime);
-        self::assertInstanceOf(\DateTimeImmutable::class, $immutableDateTime);
-        self::assertInstanceOf(\DateTimeImmutable::class, $interfaceDateTime);
-
-        /* @phpstan-ignore-next-line */
-        self::assertSame('2021-09-26', $mutableDateTime->format('Y-m-d'));
-        /* @phpstan-ignore-next-line */
-        self::assertSame('2021-09-26', $immutableDateTime->format('Y-m-d'));
-        /* @phpstan-ignore-next-line */
-        self::assertSame('2021-09-26', $interfaceDateTime->format('Y-m-d'));
+        self::assertInstanceOf($type, $dateTime);
+        self::assertSame($expected, $dateTime->format('Y-m-d'));
     }
 
     public function testDateTimeTypeStringValue(): void
