@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Type;
 
-use Guennichi\Mapper\Context;
 use Guennichi\Mapper\Exception\ResolverNotFoundException;
+use Guennichi\Mapper\Metadata\Model\Argument;
 
-class ObjectType extends Type
+/**
+ * @template T of object
+ */
+class ObjectType implements TypeInterface
 {
+    /**
+     * @param class-string<T> $classname
+     */
     public function __construct(public readonly string $classname)
     {
     }
 
-    public function __toString(): string
-    {
-        return $this->classname;
-    }
-
-    public function resolve(mixed $input, Context $context): mixed
+    public function resolve(mixed $value, Argument $argument): mixed
     {
         throw new ResolverNotFoundException($this);
     }

@@ -4,27 +4,21 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Type;
 
-use Guennichi\Mapper\Attribute\Flexible;
-use Guennichi\Mapper\Context;
-use Guennichi\Mapper\Exception\UnexpectedValueException;
+use Guennichi\Mapper\Exception\InvalidTypeException;
+use Guennichi\Mapper\Metadata\Model\Argument;
 
-class IntegerType extends ScalarType
+class IntegerType extends ScalarType implements TypeInterface
 {
-    public function __toString(): string
+    public function resolve(mixed $value, Argument $argument): mixed
     {
-        return 'int';
-    }
+        if (!\is_int($value)) {
+            if ($argument->flexible && \is_scalar($value)) {
+                return (int) $value;
+            }
 
-    public function resolve(mixed $input, Context $context): mixed
-    {
-        if ($context->attribute(Flexible::class)) {
-            return filter_var($input, \FILTER_VALIDATE_INT);
+            throw new InvalidTypeException($value, 'int');
         }
 
-        if (!\is_int($input)) {
-            throw new UnexpectedValueException($input, 'int', $context);
-        }
-
-        return $input;
+        return $value;
     }
 }

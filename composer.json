@@ -17,17 +17,15 @@
         "symfony/filesystem": ">=5.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9",
-        "friendsofphp/php-cs-fixer": "^3.9",
-        "phpstan/phpstan": "^1.8",
-        "guennichi/collection": "^1.0",
-        "symfony/serializer": "^6.1",
-        "liip/serializer": "^2.0",
-        "jms/serializer": "^3.18",
+        "phpunit/phpunit": "^10",
+        "phpstan/phpstan": "^1.9",
+        "friendsofphp/php-cs-fixer": "^3.13",
+        "symfony/var-dumper": "^6.2",
         "phpbench/phpbench": "^1.2",
-        "symfony/property-access": "^6.1",
-        "symfony/property-info": "^6.1",
-        "cuyz/valinor": "^0.14.0"
+        "symfony/serializer": "^6.2",
+        "symfony/property-info": "^6.2",
+        "symfony/property-access": "^6.2",
+        "cuyz/valinor": "^1.3"
     },
     "autoload": {
         "psr-4": {
@@ -39,5 +37,17 @@
             "Tests\\Guennichi\\Mapper\\": "tests/",
             "Benchmark\\Guennichi\\Mapper\\": "benchmark/"
         }
+    },
+    "scripts": {
+        "lint": [
+            "@php vendor/bin/phpstan",
+            "@php vendor/bin/php-cs-fixer fix --dry-run --stop-on-violation"
+        ],
+        "lint:fix": [
+            "@php vendor/bin/php-cs-fixer fix"
+        ],
+        "test": [
+            "@php vendor/bin/phpunit"
+        ]
     }
 }

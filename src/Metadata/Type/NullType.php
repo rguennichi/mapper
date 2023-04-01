@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Type;
 
-use Guennichi\Mapper\Context;
-use Guennichi\Mapper\Exception\UnexpectedValueException;
+use Guennichi\Mapper\Exception\InvalidTypeException;
+use Guennichi\Mapper\Metadata\Model\Argument;
 
-class NullType extends Type
+class NullType extends ScalarType implements TypeInterface
 {
-    public function __toString(): string
+    public function resolve(mixed $value, Argument $argument): mixed
     {
-        return 'null';
-    }
-
-    public function resolve(mixed $input, Context $context): mixed
-    {
-        if (null !== $input) {
-            throw new UnexpectedValueException($input, 'null', $context);
+        if (null !== $value) {
+            throw new InvalidTypeException($value, 'null');
         }
 
         return null;

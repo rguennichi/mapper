@@ -5,59 +5,55 @@ declare(strict_types=1);
 namespace Guennichi\Mapper\Metadata\Type;
 
 use Guennichi\Mapper\Attribute\DateTimeFormat;
-use Guennichi\Mapper\Context;
-use Guennichi\Mapper\Exception\UnexpectedValueException;
+use Guennichi\Mapper\Exception\InvalidTypeException;
+use Guennichi\Mapper\Metadata\Model\Argument;
 
+/**
+ * @template T of \DateTimeInterface
+ *
+ * @extends ObjectType<T>
+ *
+ * @property class-string<\DateTime|\DateTimeImmutable> $classname
+ */
 class DateTimeType extends ObjectType
 {
     /**
-     * @param class-string<\DateTimeInterface> $classname
+     * @param class-string<T> $classname
      */
     public function __construct(string $classname)
     {
-        if (
-            \DateTimeInterface::class !== $classname &&
-            !\in_array($classname, [\DateTime::class, \DateTimeImmutable::class]) &&
-            !is_subclass_of($classname, \DateTime::class) &&
-            !is_subclass_of($classname, \DateTimeImmutable::class)
-        ) {
-            throw new \RuntimeException(sprintf('Expecting instance of "%s", "%s" given', \DateTimeInterface::class, $classname));
+        if (\DateTimeInterface::class === $classname) {
+            $classname = \DateTimeImmutable::class;
         }
 
         parent::__construct($classname);
     }
 
-    public function resolve(mixed $input, Context $context): object
+    public function resolve(mixed $value, Argument $argument): \DateTimeInterface
     {
-        if ($input instanceof $this->classname) {
-            return $input;
+        $timezone = false;
+        if (\is_array($value) && ($value['date'] ?? false)) {
+            $timezone = $value['timezone'] ?? false;
+            $value = $value['date'];
         }
 
-        $context->visitClassname($this->classname);
+        if (!\is_string($value)) {
+            if ($value instanceof $this->classname) {
+                return $value;
+            }
 
-        // json_encode(new DateTime()) format support
-        if (\is_array($input) && isset($input['date'])) {
-            $input = $input['date'];
+            throw new InvalidTypeException($value, 'string');
         }
 
-        if (!\is_string($input)) {
-            throw new UnexpectedValueException($input, 'string', $context);
-        }
-
-        $classname = \DateTimeInterface::class === $this->classname ? \DateTimeImmutable::class : $this->classname;
-        $dateTimeFormat = $context->attribute(DateTimeFormat::class)?->format ?? null;
-        if (null !== $dateTimeFormat) {
-            if (false === $object = $classname::createFromFormat($dateTimeFormat, $input)) {
-                throw new UnexpectedValueException(false, $this->classname, $context);
+        if ($format = $argument->getAttribute(DateTimeFormat::class)?->format ?? false) {
+            $object = $this->classname::createFromFormat($format, $value, $timezone ? new \DateTimeZone($timezone) : null);
+            if (!$object) {
+                throw new InvalidTypeException($value, "string<$format>");
             }
 
             return $object;
         }
 
-        try {
-            return new $classname($input);
-        } catch (\Exception) {
-            throw new UnexpectedValueException($input, $classname, $context);
-        }
+        return new $this->classname($value, $timezone ? new \DateTimeZone($timezone) : null);
     }
 }

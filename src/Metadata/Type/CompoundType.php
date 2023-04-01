@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Type;
 
-use Guennichi\Mapper\Context;
 use Guennichi\Mapper\Exception\ResolverNotFoundException;
+use Guennichi\Mapper\Metadata\Model\Argument;
 
-class CompoundType extends AggregatedType
+class CompoundType implements TypeInterface
 {
-    public function __construct(TypeInterface ...$types)
+    /**
+     * @param non-empty-array<TypeInterface> $types
+     */
+    public function __construct(public readonly array $types)
     {
-        parent::__construct($types, '|');
     }
 
-    public function resolve(mixed $input, Context $context): mixed
+    public function resolve(mixed $value, Argument $argument): mixed
     {
         throw new ResolverNotFoundException($this);
     }

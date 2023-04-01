@@ -10,6 +10,6 @@ class ResolverNotFoundException extends MapperException
 {
     public function __construct(TypeInterface $type)
     {
-        parent::__construct(sprintf('Resolver not found for the type "%s"', $type->__toString()));
+        parent::__construct(sprintf('Resolver not found for the type "%s"', $type::class));
     }
 }

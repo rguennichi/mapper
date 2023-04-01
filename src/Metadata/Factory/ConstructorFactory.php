@@ -4,43 +4,56 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Factory;
 
-use Guennichi\Collection\CollectionInterface;
-use Guennichi\Mapper\Metadata\Member\Constructor;
-use Guennichi\Mapper\Metadata\Member\Parameter;
+use Guennichi\Mapper\Attribute\Attribute;
+use Guennichi\Mapper\Metadata\Model\Argument;
+use Guennichi\Mapper\Metadata\Model\Constructor;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\ObjectType;
 
 class ConstructorFactory
 {
-    public function __construct(private readonly ParameterFactory $parameterFactory)
+    public function __construct(private readonly ArgumentFactory $argumentFactory)
     {
-    }
-
-    public function create(string $classname): Constructor
-    {
-        $reflectionConstructor = new \ReflectionMethod($classname, '__construct');
-
-        $parameters = [];
-        foreach ($reflectionConstructor->getParameters() as $reflectionParameter) {
-            $parameters[$reflectionParameter->getName()] = $this->parameterFactory->create($reflectionParameter);
-        }
-
-        return new Constructor($classname, $this->getClassType($classname, array_values($parameters)), $parameters);
     }
 
     /**
-     * @param array<int, Parameter> $parameters
+     * @template T of object
+     *
+     * @param class-string<T> $classname
      */
-    private function getClassType(string $classname, array $parameters): ObjectType|CollectionType
+    public function __invoke(string $classname): Constructor
     {
-        if (!\in_array(CollectionInterface::class, class_implements($classname) ?: [])) {
-            return new ObjectType($classname);
+        $reflectionClass = new \ReflectionClass($classname);
+
+        $attributes = [];
+        foreach ($reflectionClass->getAttributes(Attribute::class, \ReflectionAttribute::IS_INSTANCEOF) as $reflectionAttribute) {
+            $attributes[$reflectionAttribute->getName()] = $reflectionAttribute->newInstance();
         }
 
-        if (1 !== \count($parameters)) {
-            throw new \RuntimeException(sprintf('Collection should have exactly one parameter in constructor in order to know its value type, "%d" given', \count($parameters)));
+        $arguments = [];
+        foreach ($reflectionClass->getConstructor()?->getParameters() ?? [] as $reflectionParameter) {
+            $parameter = $this->argumentFactory->__invoke($reflectionParameter, $attributes);
+
+            $arguments[$parameter->getMappedName()] = $parameter;
         }
 
-        return new CollectionType($classname, $parameters[0]->type);
+        return new Constructor(
+            $classname,
+            $arguments,
+            $this->createType($classname, array_values($arguments)),
+        );
+    }
+
+    /**
+     * @param class-string $classname
+     * @param array<Argument> $arguments
+     */
+    private function createType(string $classname, array $arguments): ObjectType|CollectionType
+    {
+        if (is_subclass_of($classname, \Traversable::class) && 1 === \count($arguments) && $arguments[0]->variadic) {
+            return new CollectionType($classname, $arguments[0]->type);
+        }
+
+        return new ObjectType($classname);
     }
 }

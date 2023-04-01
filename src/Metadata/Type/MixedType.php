@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Type;
 
-use Guennichi\Mapper\Context;
+use Guennichi\Mapper\Metadata\Model\Argument;
 
-class MixedType extends Type
+class MixedType implements TypeInterface
 {
-    public function __toString(): string
+    public function resolve(mixed $value, Argument $argument): mixed
     {
-        return 'mixed';
-    }
-
-    public function resolve(mixed $input, Context $context): mixed
-    {
-        return $input;
+        return $value;
     }
 }

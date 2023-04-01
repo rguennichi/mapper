@@ -9,9 +9,10 @@ interface MapperInterface
     /**
      * @template T of object
      *
+     * @param array<array-key, mixed> $input
      * @param class-string<T> $target
      *
      * @return T
      */
-    public function map(mixed $source, string $target): object;
+    public function __invoke(array $input, string $target): object;
 }

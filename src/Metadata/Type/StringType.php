@@ -4,28 +4,21 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Type;
 
-use Guennichi\Mapper\Attribute\Flexible;
-use Guennichi\Mapper\Context;
-use Guennichi\Mapper\Exception\UnexpectedValueException;
+use Guennichi\Mapper\Exception\InvalidTypeException;
+use Guennichi\Mapper\Metadata\Model\Argument;
 
-class StringType extends ScalarType
+class StringType extends ScalarType implements TypeInterface
 {
-    public function __toString(): string
+    public function resolve(mixed $value, Argument $argument): mixed
     {
-        return 'string';
-    }
+        if (!\is_string($value)) {
+            if ($argument->flexible && \is_scalar($value)) {
+                return (string) $value;
+            }
 
-    public function resolve(mixed $input, Context $context): string
-    {
-        if ($context->attribute(Flexible::class)) {
-            /* @phpstan-ignore-next-line */
-            return (string) $input;
+            throw new InvalidTypeException($value, 'string');
         }
 
-        if (!\is_string($input)) {
-            throw new UnexpectedValueException($input, 'string', $context);
-        }
-        // We found that is_string() is a potential cause for performance issues
-        return $input;
+        return $value;
     }
 }

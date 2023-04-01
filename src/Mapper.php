@@ -4,160 +4,140 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper;
 
-use Guennichi\Mapper\Exception\MissingArgumentsException;
-use Guennichi\Mapper\Exception\UnexpectedValueException;
+use Guennichi\Mapper\Exception\InvalidTypeException;
 use Guennichi\Mapper\Metadata\ConstructorFetcher;
-use Guennichi\Mapper\Metadata\Factory\ConstructorFactory;
-use Guennichi\Mapper\Metadata\Factory\ParameterFactory;
-use Guennichi\Mapper\Metadata\Factory\Type\ParameterTypeFactory;
-use Guennichi\Mapper\Metadata\Factory\Type\Source\ParameterTypeFactoryInterface;
-use Guennichi\Mapper\Metadata\Factory\Type\Source\PhpDocumentorParameterTypeFactory;
-use Guennichi\Mapper\Metadata\Factory\Type\Source\ReflectionParameterTypeFactory;
-use Guennichi\Mapper\Metadata\Repository\ConstructorInMemoryRepository;
-use Guennichi\Mapper\Metadata\Repository\ConstructorRepositoryInterface;
+use Guennichi\Mapper\Metadata\Model\Argument;
+use Guennichi\Mapper\Metadata\Model\Constructor;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
+use Guennichi\Mapper\Metadata\Type\DateTimeType;
 use Guennichi\Mapper\Metadata\Type\NullableType;
 use Guennichi\Mapper\Metadata\Type\ObjectType;
+use Guennichi\Mapper\Metadata\Type\ScalarType;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
 
 class Mapper implements MapperInterface
 {
-    private readonly ConstructorFetcher $constructorFetcher;
-
-    public function __construct(
-        ConstructorRepositoryInterface $constructorRepository = new ConstructorInMemoryRepository(),
-        ParameterTypeFactoryInterface $phpDocParameterTypeFactory = new PhpDocumentorParameterTypeFactory(),
-        ParameterTypeFactoryInterface $reflectionParameterTypeFactory = new ReflectionParameterTypeFactory(),
-        ?ConstructorFetcher $constructorFetcher = null,
-    ) {
-        $this->constructorFetcher = $constructorFetcher ?? new ConstructorFetcher(
-            new ConstructorFactory(
-                new ParameterFactory(
-                    new ParameterTypeFactory(
-                        $reflectionParameterTypeFactory,
-                        $phpDocParameterTypeFactory,
-                    ),
-                ),
-            ),
-            $constructorRepository,
-        );
-    }
-
-    public function map(mixed $source, string $target): object
+    public function __construct(private readonly ConstructorFetcher $constructorFetcher)
     {
-        /* @phpstan-ignore-next-line */
-        return $this->resolve(
-            $source,
-            $this->constructorFetcher->fetch($target)->classType,
-            new Context($target),
-        );
     }
 
-    private function resolve(mixed $input, TypeInterface $type, Context $context): mixed
+    public function __invoke(array $input, string $target): object
+    {
+        $constructor = $this->constructorFetcher->__invoke($target);
+
+        if ($constructor->type instanceof CollectionType) {
+            return $this->resolveCollection(
+                $input,
+                $target,
+                $constructor->type->itemType,
+                array_values($constructor->arguments)[0],
+            );
+        }
+
+        return $this->resolveObject($input, $constructor);
+    }
+
+    private function resolve(mixed $input, TypeInterface $type, Argument $argument): mixed
     {
         return match ($type::class) {
-            default => $type->resolve($input, $context),
-            ObjectType::class => $this->resolveObject($input, $type, $context),
-            NullableType::class => $this->resolveNullable($input, $type, $context),
-            ArrayType::class => $this->resolveArray($input, $type, $context),
-            CollectionType::class => $this->resolveCollection($input, $type, $context),
-            CompoundType::class => $this->resolveCompound($input, $type, $context),
+            CollectionType::class => $this->resolveCollection($input, $type->classname, $type->itemType, $argument),
+            ObjectType::class => $this->resolveObject($input, $this->constructorFetcher->__invoke($type->classname)),
+            NullableType::class => $this->resolveNullable($input, $type, $argument),
+            ArrayType::class => $this->resolveArray($input, $type, $argument),
+            CompoundType::class => $this->resolveCompound($input, $type, $argument),
+            DateTimeType::class => $type->resolve($input, $argument),
+            default => $argument->trusted ? $input : $type->resolve($input, $argument),
         };
     }
 
-    private function resolveNullable(mixed $input, NullableType $type, Context $context): mixed
+    /**
+     * @template T of object
+     *
+     * @param class-string<T> $classname
+     *
+     * @return T
+     */
+    private function resolveCollection(mixed $input, string $classname, TypeInterface $itemType, Argument $argument): object
     {
-        if (null === $input) {
-            return null;
+        if (!\is_array($input)) {
+            if ($input instanceof $classname) {
+                return $input;
+            }
+
+            throw new InvalidTypeException($input, "$classname|array");
         }
 
-        return $this->resolve($input, $type->innerType, $context);
-    }
-
-    /**
-     * Try to AVOID this type as much as possible.
-     */
-    private function resolveCompound(mixed $input, CompoundType $type, Context $context): mixed
-    {
-        foreach ($type->types as $possibleType) {
-            try {
-                return $this->resolve($input, $possibleType, $context);
-            } catch (UnexpectedValueException) {
+        if (!$argument->trusted || !$itemType instanceof ScalarType) {
+            foreach ($input as $k => $v) {
+                $input[$k] = $this->resolve($v, $itemType, $argument);
             }
         }
 
-        throw new UnexpectedValueException($input, $type->__toString(), $context);
+        return new $classname(...$input);
+    }
+
+    /**
+     * @template T of object
+     *
+     * @param Constructor<T> $constructor
+     *
+     * @return T
+     */
+    private function resolveObject(mixed $input, Constructor $constructor): object
+    {
+        if (!\is_array($input)) {
+            if ($input instanceof $constructor->classname) {
+                return $input;
+            }
+
+            throw new InvalidTypeException($input, "$constructor->classname|array");
+        }
+
+        $args = [];
+        foreach ($input as $n => $v) {
+            if ($argument = $constructor->arguments[$n] ?? false) {
+                $args[$argument->name] = $this->resolve($v, $argument->type, $argument);
+            }
+        }
+
+        return new $constructor->classname(...$args);
     }
 
     /**
      * @return array<array-key, mixed>
      */
-    private function resolveArray(mixed $input, ArrayType $type, Context $context): array
+    private function resolveArray(mixed $input, ArrayType $type, Argument $argument): array
     {
         if (!\is_array($input)) {
-            throw new UnexpectedValueException($input, 'array', $context);
+            throw new InvalidTypeException($input, 'array');
         }
 
-        $items = [];
-        foreach ($input as $key => $value) {
-            $items[$type->keyType->resolve($key, $context)] = $this->resolve($value, $type->valueType, $context);
-        }
-
-        return $items;
-    }
-
-    private function resolveCollection(mixed $input, CollectionType $type, Context $context): object
-    {
-        if ($input instanceof $type->classname) {
-            return $input;
-        }
-
-        $context->visitClassname($type->classname);
-
-        if (!\is_array($input)) {
-            throw new UnexpectedValueException($input, 'array', $context);
-        }
-
-        $items = [];
-        foreach ($input as $element) {
-            $items[] = $this->resolve($element, $type->valueType, $context);
-        }
-
-        return new $type->classname(...$items);
-    }
-
-    private function resolveObject(mixed $input, ObjectType $type, Context $context): object
-    {
-        if ($input instanceof $type->classname) {
-            return $input;
-        }
-
-        $context->visitClassname($type->classname);
-
-        if (!\is_array($input)) {
-            throw new UnexpectedValueException($input, 'array', $context);
-        }
-
-        $constructor = $this->constructorFetcher->fetch($type->classname);
-
-        // Early failure in case array keys does not match the required constructor params
-        if ($missingParameters = array_diff_key($constructor->requiredParameters, $input)) {
-            throw new MissingArgumentsException($constructor->classname, array_keys($missingParameters), $input, $context);
-        }
-
-        $arguments = [];
-        foreach ($input as $name => $value) {
-            if (!($parameter = $constructor->parameters[$name] ?? null)) {
-                continue;
+        $vt = $type->valueType;
+        if (!$argument->trusted || !$vt instanceof ScalarType) {
+            foreach ($input as $k => $v) {
+                $input[$k] = $this->resolve($v, $vt, $argument);
             }
-
-            $context->visitParameter($parameter);
-
-            $arguments[$name] = $this->resolve($value, $parameter->type, $context);
         }
 
-        return new $constructor->classname(...$arguments);
+        return $input;
+    }
+
+    private function resolveCompound(mixed $input, CompoundType $type, Argument $argument): mixed
+    {
+        foreach ($type->types as $t) {
+            try {
+                return $this->resolve($input, $t, $argument);
+            } catch (InvalidTypeException) {
+            }
+        }
+
+        throw new InvalidTypeException($input, implode(', ', array_map(get_class(...), $type->types)));
+    }
+
+    private function resolveNullable(mixed $input, NullableType $type, Argument $argument): mixed
+    {
+        return $input ? $this->resolve($input, $type->innerType, $argument) : null;
     }
 }
