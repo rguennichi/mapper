@@ -81,11 +81,12 @@ class MapperTest extends TestCase
         );
 
         self::assertEquals($expectedObject, $this->mapper->__invoke(Product::getMock(), Product::class));
+        self::assertEquals($expectedObject, $this->mapper->map(Product::getMock(), Product::class));
     }
 
     public function testItMapArrayToCollection(): void
     {
-        self::assertEquals(new OfferList(
+        $expectedCollection = new OfferList(
             new Offer(
                 'Offer1',
                 new Image('image1', 'https://example.com/image1.png'),
@@ -101,6 +102,9 @@ class MapperTest extends TestCase
                 false,
                 new \DateTimeImmutable('2023-02-13 15:30:09.000000', new \DateTimeZone('+02:00')),
             ),
-        ), $this->mapper->__invoke(OfferList::getMock(), OfferList::class));
+        );
+
+        self::assertEquals($expectedCollection, $this->mapper->__invoke(OfferList::getMock(), OfferList::class));
+        self::assertEquals($expectedCollection, $this->mapper->map(OfferList::getMock(), OfferList::class));
     }
 }

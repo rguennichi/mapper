@@ -39,8 +39,12 @@ class Mapper implements MapperInterface
         return $this->resolveObject($input, $constructor);
     }
 
-    public function map(array $input, string $target): object
+    public function map(mixed $input, string $target): object
     {
+        if (!\is_array($input)) {
+            throw new InvalidTypeException($input, "$target|array");
+        }
+
         return $this->__invoke($input, $target);
     }
 
