@@ -39,6 +39,11 @@ class Mapper implements MapperInterface
         return $this->resolveObject($input, $constructor);
     }
 
+    public function map(array $input, string $target): object
+    {
+        return $this->__invoke($input, $target);
+    }
+
     private function resolve(mixed $input, TypeInterface $type, Argument $argument): mixed
     {
         return match ($type::class) {
