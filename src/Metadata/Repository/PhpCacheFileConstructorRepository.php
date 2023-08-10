@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Repository;
 
-use Guennichi\Mapper\Attribute\Attribute;
 use Guennichi\Mapper\Metadata\Model\Argument;
 use Guennichi\Mapper\Metadata\Model\Constructor;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
@@ -90,7 +89,7 @@ class PhpCacheFileConstructorRepository implements ConstructorRepositoryInterfac
                     PhpCodeGenerator::bool($argument->variadic),
                     PhpCodeGenerator::bool($argument->trusted),
                     PhpCodeGenerator::bool($argument->flexible),
-                    PhpCodeGenerator::array(array_map(fn (Attribute $attribute) => PhpCodeGenerator::new(
+                    PhpCodeGenerator::array(array_map(fn (object $attribute) => PhpCodeGenerator::new(
                         $attribute::class,
                         array_map(fn ($arg) => var_export($arg, true), array_values(get_object_vars($attribute))),
                     ), $argument->attributes)),
