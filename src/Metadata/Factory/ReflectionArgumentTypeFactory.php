@@ -91,9 +91,9 @@ class ReflectionArgumentTypeFactory implements ArgumentTypeFactoryInterface
             $type = new ObjectType($literalType);
         }
 
-        return $reflectionType->allowsNull() &&
-        !$type instanceof NullType &&
-        !$type instanceof MixedType ?
+        return $reflectionType->allowsNull()
+        && !$type instanceof NullType
+        && !$type instanceof MixedType ?
             new NullableType($type) :
             $type;
     }

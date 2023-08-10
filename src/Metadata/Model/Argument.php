@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Guennichi\Mapper\Metadata\Model;
 
-use Guennichi\Mapper\Attribute\Attribute;
 use Guennichi\Mapper\Attribute\Name;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
 
 class Argument
 {
     /**
-     * @template T of Attribute
+     * @template T of object
      *
      * @param array<class-string<T>, T> $attributes
      */
@@ -26,7 +25,7 @@ class Argument
     ) {
     }
 
-    public function getAttribute(string $name): ?Attribute
+    public function getAttribute(string $name): ?object
     {
         return $this->attributes[$name] ?? null;
     }

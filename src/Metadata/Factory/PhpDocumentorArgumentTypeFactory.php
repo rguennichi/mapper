@@ -49,7 +49,7 @@ class PhpDocumentorArgumentTypeFactory implements ArgumentTypeFactoryInterface
     private array $cache = [];
 
     public function __construct(
-        ?DocBlockFactoryInterface $docBlockFactory = null,
+        DocBlockFactoryInterface $docBlockFactory = null,
         private readonly ContextFactory $contextFactory = new ContextFactory(),
     ) {
         $this->docBlockFactory = $docBlockFactory ?? DocBlockFactory::createInstance();
@@ -74,8 +74,7 @@ class PhpDocumentorArgumentTypeFactory implements ArgumentTypeFactoryInterface
         foreach (
             $this->docBlockFactory
                 ->create($docComment, $this->contextFactory->createFromReflector($reflectionParameter))
-                ->getTagsWithTypeByName('param')
-            as $arg
+                ->getTagsWithTypeByName('param') as $arg
         ) {
             \assert($arg instanceof Param);
 
