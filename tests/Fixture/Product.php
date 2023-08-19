@@ -32,6 +32,7 @@ class Product
         public readonly \DateTime $updatedAt,
         #[DateTimeFormat('m-Y H:i')]
         public readonly \DateTimeImmutable $enabledAt,
+        public readonly ProductTypeEnum $type,
     ) {
     }
 
@@ -57,6 +58,7 @@ class Product
             'createdAt' => '2023-02-10',
             'updatedAt' => '2023-03-01T15:30:09+02:00',
             'enabledAt' => '03-2023 15:43',
+            'type' => 'type1',
         ];
     }
 }

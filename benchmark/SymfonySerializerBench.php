@@ -8,6 +8,7 @@ use PhpBench\Attributes\BeforeMethods;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\BackedEnumNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -20,6 +21,7 @@ class SymfonySerializerBench
     public function setUp(): void
     {
         $this->serializer = new Serializer([
+            new BackedEnumNormalizer(),
             new ObjectNormalizer(null, null, null, new PhpDocExtractor()),
             new ArrayDenormalizer(),
             new DateTimeNormalizer(),

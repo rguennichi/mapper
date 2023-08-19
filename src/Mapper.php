@@ -9,6 +9,7 @@ use Guennichi\Mapper\Metadata\ConstructorFetcher;
 use Guennichi\Mapper\Metadata\Model\Argument;
 use Guennichi\Mapper\Metadata\Model\Constructor;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
+use Guennichi\Mapper\Metadata\Type\BackedEnumType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
 use Guennichi\Mapper\Metadata\Type\DateTimeType;
@@ -39,15 +40,6 @@ class Mapper implements MapperInterface
         return $this->resolveObject($input, $constructor);
     }
 
-    public function map(mixed $input, string $target): object
-    {
-        if (!\is_array($input)) {
-            throw new InvalidTypeException($input, "$target|array");
-        }
-
-        return $this->__invoke($input, $target);
-    }
-
     private function resolve(mixed $input, TypeInterface $type, Argument $argument): mixed
     {
         return match ($type::class) {
@@ -56,7 +48,7 @@ class Mapper implements MapperInterface
             NullableType::class => $this->resolveNullable($input, $type, $argument),
             ArrayType::class => $this->resolveArray($input, $type, $argument),
             CompoundType::class => $this->resolveCompound($input, $type, $argument),
-            DateTimeType::class => $type->resolve($input, $argument),
+            DateTimeType::class, BackedEnumType::class => $type->resolve($input, $argument),
             default => $argument->trusted ? $input : $type->resolve($input, $argument),
         };
     }

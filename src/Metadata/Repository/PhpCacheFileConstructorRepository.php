@@ -7,6 +7,7 @@ namespace Guennichi\Mapper\Metadata\Repository;
 use Guennichi\Mapper\Metadata\Model\Argument;
 use Guennichi\Mapper\Metadata\Model\Constructor;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
+use Guennichi\Mapper\Metadata\Type\BackedEnumType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
 use Guennichi\Mapper\Metadata\Type\NullableType;
@@ -105,6 +106,13 @@ class PhpCacheFileConstructorRepository implements ConstructorRepositoryInterfac
             return PhpCodeGenerator::new($type::class, [
                 PhpCodeGenerator::str($type->classname),
                 $this->generateTypeCode($type->itemType),
+            ]);
+        }
+
+        if ($type instanceof BackedEnumType) {
+            return PhpCodeGenerator::new($type::class, [
+                PhpCodeGenerator::str($type->classname),
+                $this->generateTypeCode($type->backingType),
             ]);
         }
 

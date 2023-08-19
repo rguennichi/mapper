@@ -6,6 +6,7 @@ namespace Tests\Guennichi\Mapper\Unit\Metadata\Factory;
 
 use Guennichi\Mapper\Metadata\Factory\ReflectionArgumentTypeFactory;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
+use Guennichi\Mapper\Metadata\Type\BackedEnumType;
 use Guennichi\Mapper\Metadata\Type\BooleanType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
 use Guennichi\Mapper\Metadata\Type\DateTimeType;
@@ -17,6 +18,8 @@ use Guennichi\Mapper\Metadata\Type\ObjectType;
 use Guennichi\Mapper\Metadata\Type\StringType;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
 use PHPUnit\Framework\TestCase;
+use Tests\Guennichi\Mapper\Fixture\IntegerEnum;
+use Tests\Guennichi\Mapper\Fixture\StringEnum;
 
 class ReflectionArgumentTypeFactoryTest extends TestCase
 {
@@ -54,6 +57,8 @@ class ReflectionArgumentTypeFactoryTest extends TestCase
                 public readonly \DateTimeImmutable $arg10 = new \DateTimeImmutable(),
                 public readonly string|bool $arg11 = '',
                 public readonly ?\stdClass $arg12 = null,
+                public readonly IntegerEnum $arg13 = IntegerEnum::CASE_1,
+                public readonly StringEnum $arg14 = StringEnum::CASE_1,
             ) {
             }
         }, '__construct'))->getParameters();
@@ -118,6 +123,16 @@ class ReflectionArgumentTypeFactoryTest extends TestCase
         yield [
             $parameter(12),
             new NullableType(new ObjectType(\stdClass::class)),
+        ];
+
+        yield [
+            $parameter(13),
+            new BackedEnumType(IntegerEnum::class, new IntegerType()),
+        ];
+
+        yield [
+            $parameter(14),
+            new BackedEnumType(StringEnum::class, new StringType()),
         ];
     }
 }

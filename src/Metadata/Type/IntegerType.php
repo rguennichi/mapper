@@ -9,7 +9,7 @@ use Guennichi\Mapper\Metadata\Model\Argument;
 
 class IntegerType extends ScalarType implements TypeInterface
 {
-    public function resolve(mixed $value, Argument $argument): mixed
+    public function resolve(mixed $value, Argument $argument): int
     {
         if (!\is_int($value)) {
             if ($argument->flexible && \is_scalar($value)) {

@@ -12,6 +12,7 @@ use Guennichi\Mapper\Metadata\Model\Argument;
 use Guennichi\Mapper\Metadata\Model\Constructor;
 use Guennichi\Mapper\Metadata\Repository\PhpCacheFileConstructorRepository;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
+use Guennichi\Mapper\Metadata\Type\BackedEnumType;
 use Guennichi\Mapper\Metadata\Type\BooleanType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
@@ -19,6 +20,8 @@ use Guennichi\Mapper\Metadata\Type\IntegerType;
 use Guennichi\Mapper\Metadata\Type\ObjectType;
 use Guennichi\Mapper\Metadata\Type\StringType;
 use PHPUnit\Framework\TestCase;
+use Tests\Guennichi\Mapper\Fixture\IntegerEnum;
+use Tests\Guennichi\Mapper\Fixture\StringEnum;
 
 class PhpCacheFileConstructorRepositoryTest extends TestCase
 {
@@ -52,6 +55,8 @@ class PhpCacheFileConstructorRepositoryTest extends TestCase
                             new ObjectType(\stdClass::class),
                         ),
                         new BooleanType(),
+                        new BackedEnumType(IntegerEnum::class, new IntegerType()),
+                        new BackedEnumType(StringEnum::class, new StringType()),
                     ],
                 ),
                 false,

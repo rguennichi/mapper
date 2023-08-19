@@ -6,6 +6,7 @@ namespace Guennichi\Mapper\Metadata\Factory;
 
 use Guennichi\Mapper\Exception\MapperException;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
+use Guennichi\Mapper\Metadata\Type\BackedEnumType;
 use Guennichi\Mapper\Metadata\Type\BooleanType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
@@ -120,6 +121,19 @@ class PhpDocumentorArgumentTypeFactory implements ArgumentTypeFactoryInterface
 
         if ($documentorType instanceof Object_) {
             $classname = PhpDocumentorClassFetcher::fromFqsen($documentorType->getFqsen());
+
+            if (is_subclass_of($classname, \BackedEnum::class)) {
+                $backingReflectionType = (new \ReflectionEnum($classname))->getBackingType();
+                if (!$backingReflectionType instanceof \ReflectionNamedType) {
+                    throw MapperException::createFromClassnameArgument(sprintf('Backing type should always be of type "%s", "%s" given.', \ReflectionNamedType::class, get_debug_type($backingReflectionType)), $classname, $argument);
+                }
+
+                return new BackedEnumType($classname, match ($backingReflectionType->getName()) {
+                    'string' => new StringType(),
+                    'int' => new IntegerType(),
+                    default => throw MapperException::createFromClassnameArgument(sprintf('Backing enum should be either "string" or "int", "%s" given.', $backingReflectionType->getName()), $classname, $argument),
+                });
+            }
 
             return ClassnameDateTimeTypeChecker::isDateTime($classname) ?
                 /* @phpstan-ignore-next-line */

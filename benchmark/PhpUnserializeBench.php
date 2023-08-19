@@ -10,6 +10,7 @@ use Tests\Guennichi\Mapper\Fixture\Offer;
 use Tests\Guennichi\Mapper\Fixture\OfferList;
 use Tests\Guennichi\Mapper\Fixture\Price;
 use Tests\Guennichi\Mapper\Fixture\Product;
+use Tests\Guennichi\Mapper\Fixture\ProductTypeEnum;
 
 class PhpUnserializeBench
 {
@@ -53,6 +54,7 @@ class PhpUnserializeBench
                 \DateTime::createFromFormat(\DATE_ATOM, '2023-03-01T15:30:09+02:00'),
                 /* @phpstan-ignore-next-line */
                 \DateTimeImmutable::createFromFormat('m-Y H:i', '03-2023 15:43'),
+                ProductTypeEnum::Type1,
             ),
         );
     }

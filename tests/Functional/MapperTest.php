@@ -19,6 +19,7 @@ use Tests\Guennichi\Mapper\Fixture\Offer;
 use Tests\Guennichi\Mapper\Fixture\OfferList;
 use Tests\Guennichi\Mapper\Fixture\Price;
 use Tests\Guennichi\Mapper\Fixture\Product;
+use Tests\Guennichi\Mapper\Fixture\ProductTypeEnum;
 
 class MapperTest extends TestCase
 {
@@ -78,10 +79,10 @@ class MapperTest extends TestCase
             \DateTime::createFromFormat(\DATE_ATOM, '2023-03-01T15:30:09+02:00'),
             /* @phpstan-ignore-next-line */
             \DateTimeImmutable::createFromFormat('m-Y H:i', '03-2023 15:43'),
+            ProductTypeEnum::Type1,
         );
 
         self::assertEquals($expectedObject, $this->mapper->__invoke(Product::getMock(), Product::class));
-        self::assertEquals($expectedObject, $this->mapper->map(Product::getMock(), Product::class));
     }
 
     public function testItMapArrayToCollection(): void
@@ -105,6 +106,5 @@ class MapperTest extends TestCase
         );
 
         self::assertEquals($expectedCollection, $this->mapper->__invoke(OfferList::getMock(), OfferList::class));
-        self::assertEquals($expectedCollection, $this->mapper->map(OfferList::getMock(), OfferList::class));
     }
 }

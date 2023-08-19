@@ -6,6 +6,7 @@ namespace Guennichi\Mapper\Metadata\Factory;
 
 use Guennichi\Mapper\Exception\MapperException;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
+use Guennichi\Mapper\Metadata\Type\BackedEnumType;
 use Guennichi\Mapper\Metadata\Type\BooleanType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
@@ -85,6 +86,13 @@ class ReflectionArgumentTypeFactory implements ArgumentTypeFactoryInterface
             \assert(\DateTimeInterface::class === $literalType || is_subclass_of($literalType, \DateTimeInterface::class));
 
             $type = new DateTimeType($literalType);
+        } elseif (is_subclass_of($literalType, \BackedEnum::class)) {
+            $backingType = $this->createFromReflectionType((new \ReflectionEnum($literalType))->getBackingType(), $classname, $argument);
+            if (!$backingType instanceof StringType && !$backingType instanceof IntegerType) {
+                throw MapperException::createFromClassnameArgument(sprintf('"%s" backing type is not supported', $backingType::class), $classname, $argument);
+            }
+
+            $type = new BackedEnumType($literalType, $backingType);
         } else {
             \assert(class_exists($literalType));
 

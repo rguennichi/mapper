@@ -8,6 +8,7 @@ namespace Tests\Guennichi\Mapper\Unit\Metadata\Factory;
 
 use Guennichi\Mapper\Metadata\Factory\PhpDocumentorArgumentTypeFactory;
 use Guennichi\Mapper\Metadata\Type\ArrayType;
+use Guennichi\Mapper\Metadata\Type\BackedEnumType;
 use Guennichi\Mapper\Metadata\Type\BooleanType;
 use Guennichi\Mapper\Metadata\Type\CollectionType;
 use Guennichi\Mapper\Metadata\Type\CompoundType;
@@ -21,6 +22,8 @@ use Guennichi\Mapper\Metadata\Type\StringType;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
 use PHPUnit\Framework\TestCase;
 use Tests\Guennichi\Mapper\Fixture\Collection;
+use Tests\Guennichi\Mapper\Fixture\IntegerEnum;
+use Tests\Guennichi\Mapper\Fixture\StringEnum;
 
 class PhpDocumentorArgumentTypeFactoryTest extends TestCase
 {
@@ -94,6 +97,8 @@ class PhpDocumentorArgumentTypeFactoryTest extends TestCase
              * @param string|float $arg11
              * @param \stdClass|null $arg12
              * @param \Tests\Guennichi\Mapper\Fixture\Collection<\stdClass> $arg13
+             * @param \Tests\Guennichi\Mapper\Fixture\IntegerEnum $arg14
+             * @param \Tests\Guennichi\Mapper\Fixture\StringEnum $arg15
              */
             public function __construct(
                 public $arg1 = '',
@@ -109,6 +114,8 @@ class PhpDocumentorArgumentTypeFactoryTest extends TestCase
                 public $arg11 = '',
                 public $arg12 = null,
                 public $arg13 = null,
+                public $arg14 = null,
+                public $arg15 = null,
             ) {
             }
         }, '__construct'))->getParameters();
@@ -178,6 +185,16 @@ class PhpDocumentorArgumentTypeFactoryTest extends TestCase
         yield [
             $parameter(13),
             new CollectionType(Collection::class, new ObjectType(\stdClass::class)),
+        ];
+
+        yield [
+            $parameter(14),
+            new BackedEnumType(IntegerEnum::class, new IntegerType()),
+        ];
+
+        yield [
+            $parameter(15),
+            new BackedEnumType(StringEnum::class, new StringType()),
         ];
     }
 }
