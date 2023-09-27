@@ -12,7 +12,7 @@ class StringType extends ScalarType implements TypeInterface
     public function resolve(mixed $value, Argument $argument): string
     {
         if (!\is_string($value)) {
-            if ($argument->flexible && \is_scalar($value)) {
+            if ($argument->flexible && (null === $value || \is_scalar($value))) {
                 return (string) $value;
             }
 

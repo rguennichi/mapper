@@ -17,10 +17,12 @@ class StringTypeTest extends TestCase
      * @param class-string<\Throwable> $expectedResult
      */
     #[TestWith(['example', false, 'example'])]
+    #[TestWith([null, true, ''])]
     #[TestWith([12, true, '12'])]
     #[TestWith([12.542, true, '12.542'])]
     #[TestWith([true, true, '1'])]
     #[TestWith([false, true, ''])]
+    #[TestWith([null, false, InvalidTypeException::class])]
     #[TestWith([12, false, InvalidTypeException::class])]
     #[TestWith([12.542, false, InvalidTypeException::class])]
     #[TestWith([true, false, InvalidTypeException::class])]
