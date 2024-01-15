@@ -139,6 +139,6 @@ class Mapper implements MapperInterface
 
     private function resolveNullable(mixed $input, NullableType $type, Argument $argument): mixed
     {
-        return $input ? $this->resolve($input, $type->innerType, $argument) : null;
+        return null !== $input ? $this->resolve($input, $type->innerType, $argument) : null;
     }
 }

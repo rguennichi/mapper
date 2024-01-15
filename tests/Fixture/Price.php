@@ -9,7 +9,7 @@ use Guennichi\Mapper\Attribute\Trusted;
 #[Trusted]
 class Price
 {
-    public function __construct(public readonly int $cents)
+    public function __construct(public readonly ?int $cents = null)
     {
     }
 }

@@ -64,7 +64,7 @@ class MapperTest extends TestCase
                 new Offer(
                     'Offer2',
                     new Image('image2', 'https://example.com/image2.png'),
-                    new Price(800),
+                    new Price(0),
                     3,
                     false,
                     new \DateTimeImmutable('2023-02-13 15:30:09.000000', new \DateTimeZone('+02:00')),
@@ -98,7 +98,7 @@ class MapperTest extends TestCase
             new Offer(
                 'Offer2',
                 new Image('image2', 'https://example.com/image2.png'),
-                new Price(800),
+                new Price(0),
                 3,
                 false,
                 new \DateTimeImmutable('2023-02-13 15:30:09.000000', new \DateTimeZone('+02:00')),

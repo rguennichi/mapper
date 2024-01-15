@@ -30,7 +30,7 @@ class OfferList extends Collection
             [
                 'title' => 'Offer2',
                 'image' => ['title' => 'image2', 'url' => 'https://example.com/image2.png'],
-                'price' => ['cents' => 800],
+                'price' => ['cents' => 0],
                 'rating' => 3,
                 'active' => false,
                 'createdAt' => [

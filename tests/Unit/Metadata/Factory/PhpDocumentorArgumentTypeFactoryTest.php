@@ -22,8 +22,6 @@ use Guennichi\Mapper\Metadata\Type\StringType;
 use Guennichi\Mapper\Metadata\Type\TypeInterface;
 use PHPUnit\Framework\TestCase;
 use Tests\Guennichi\Mapper\Fixture\Collection;
-use Tests\Guennichi\Mapper\Fixture\IntegerEnum;
-use Tests\Guennichi\Mapper\Fixture\StringEnum;
 
 class PhpDocumentorArgumentTypeFactoryTest extends TestCase
 {
@@ -189,12 +187,12 @@ class PhpDocumentorArgumentTypeFactoryTest extends TestCase
 
         yield [
             $parameter(14),
-            new BackedEnumType(IntegerEnum::class, new IntegerType()),
+            new BackedEnumType('Tests\Guennichi\Mapper\Fixture\IntegerEnum', new IntegerType()),
         ];
 
         yield [
             $parameter(15),
-            new BackedEnumType(StringEnum::class, new StringType()),
+            new BackedEnumType('Tests\Guennichi\Mapper\Fixture\StringEnum', new StringType()),
         ];
     }
 }
