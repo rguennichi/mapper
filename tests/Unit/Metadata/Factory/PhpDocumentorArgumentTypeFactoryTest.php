@@ -45,7 +45,7 @@ class PhpDocumentorArgumentTypeFactoryTest extends TestCase
         self::expectExceptionMessageMatches('#Doc type not found for "\$example1" in "class@anonymous#');
 
         $this->factory->__invoke(new \ReflectionParameter([
-            new class() {
+            new class {
                 /**
                  * @param string $example2
                  */
@@ -64,7 +64,7 @@ class PhpDocumentorArgumentTypeFactoryTest extends TestCase
         self::expectExceptionMessageMatches('#Doc type not found for "\$example1" in "class@anonymous#');
 
         $this->factory->__invoke(new \ReflectionParameter([
-            new class() {
+            new class {
                 public function __construct(
                     public $example1 = '',
                     public $example2 = '',
@@ -80,7 +80,7 @@ class PhpDocumentorArgumentTypeFactoryTest extends TestCase
      */
     public static function validTypesDataProvider(): \Generator
     {
-        $parameters = (new \ReflectionMethod(new class() {
+        $parameters = (new \ReflectionMethod(new class {
             /**
              * @param string $arg1
              * @param int $arg2

@@ -30,7 +30,7 @@ class DateTimeTypeTest extends TestCase
 
     public function testItResolvesCustomDateTimeTypes(): void
     {
-        $customDateTime = new class() extends \DateTimeImmutable {};
+        $customDateTime = new class extends \DateTimeImmutable {};
 
         $dateTime = (new DateTimeType($customDateTime::class))->resolve('2021-09-26', $this->createMock(Argument::class));
 

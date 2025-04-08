@@ -43,7 +43,7 @@ class ReflectionArgumentTypeFactoryTest extends TestCase
      */
     public static function factoryDataProvider(): \Generator
     {
-        $parameters = (new \ReflectionMethod(new class() {
+        $parameters = (new \ReflectionMethod(new class {
             public function __construct(
                 public readonly string $arg1 = '',
                 public readonly int $arg2 = 0,

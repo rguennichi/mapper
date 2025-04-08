@@ -17,6 +17,6 @@ class MapperException extends \RuntimeException
 
     public static function createFromClassnameArgument(string $message, ?string $classname, string $argument): self
     {
-        return new self(sprintf('%s for "$%s" in "%s::__construct()"', $message, $argument, $classname));
+        return new self(\sprintf('%s for "$%s" in "%s::__construct()"', $message, $argument, $classname));
     }
 }

@@ -16,7 +16,7 @@ class PhpDocumentorClassFetcher
     {
         $classname = trim($fqsen?->__toString() ?? '', '\\');
         if (!class_exists($classname) && !interface_exists($classname)) {
-            throw new MapperException(sprintf('Type "%s" not found', $classname));
+            throw new MapperException(\sprintf('Type "%s" not found', $classname));
         }
 
         return $classname;

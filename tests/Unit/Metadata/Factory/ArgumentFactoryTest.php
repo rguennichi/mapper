@@ -38,16 +38,16 @@ class ArgumentFactoryTest extends TestCase
                 ],
             ),
             $factory->__invoke(new \ReflectionParameter([
-                    new class() {
-                        public function __construct(
-                            #[CustomAttribute]
-                            #[Flexible]
-                            public readonly string $example = '',
-                        ) {
-                        }
-                    },
-                    '__construct',
-                ], 'example'),
+                new class {
+                    public function __construct(
+                        #[CustomAttribute]
+                        #[Flexible]
+                        public readonly string $example = '',
+                    ) {
+                    }
+                },
+                '__construct',
+            ], 'example'),
             ),
         );
     }

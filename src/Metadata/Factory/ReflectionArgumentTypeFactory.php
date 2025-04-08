@@ -40,7 +40,7 @@ class ReflectionArgumentTypeFactory implements ArgumentTypeFactoryInterface
         if ($reflectionType instanceof \ReflectionUnionType) {
             $types = $reflectionType->getTypes();
             if (\count($types) < 2) {
-                throw MapperException::createFromClassnameArgument(sprintf('Compound type should at least have two types, "%d" type found.', \count($types)), $classname, $argument);
+                throw MapperException::createFromClassnameArgument(\sprintf('Compound type should at least have two types, "%d" type found.', \count($types)), $classname, $argument);
             }
 
             return new CompoundType(
@@ -52,7 +52,7 @@ class ReflectionArgumentTypeFactory implements ArgumentTypeFactoryInterface
         }
 
         if (!$reflectionType instanceof \ReflectionNamedType) {
-            throw MapperException::createFromClassnameArgument(sprintf('Type "%s" is not yet supported', $reflectionType ? $reflectionType::class : 'null'), $classname, $argument);
+            throw MapperException::createFromClassnameArgument(\sprintf('Type "%s" is not yet supported', $reflectionType ? $reflectionType::class : 'null'), $classname, $argument);
         }
 
         $literalType = $reflectionType->getName();
@@ -73,7 +73,7 @@ class ReflectionArgumentTypeFactory implements ArgumentTypeFactoryInterface
                     new MixedType(),
                 ),
                 'mixed' => new MixedType(),
-                default => throw MapperException::createFromClassnameArgument(sprintf('Type "%s" is not yet supported', $literalType), $classname, $argument),
+                default => throw MapperException::createFromClassnameArgument(\sprintf('Type "%s" is not yet supported', $literalType), $classname, $argument),
             };
         } elseif ($reflection = CollectionReflectionParameterFetcher::tryFetch($reflectionType)) {
             \assert(is_subclass_of($literalType, \Traversable::class));
@@ -89,7 +89,7 @@ class ReflectionArgumentTypeFactory implements ArgumentTypeFactoryInterface
         } elseif (is_subclass_of($literalType, \BackedEnum::class)) {
             $backingType = $this->createFromReflectionType((new \ReflectionEnum($literalType))->getBackingType(), $classname, $argument);
             if (!$backingType instanceof StringType && !$backingType instanceof IntegerType) {
-                throw MapperException::createFromClassnameArgument(sprintf('"%s" backing type is not supported', $backingType::class), $classname, $argument);
+                throw MapperException::createFromClassnameArgument(\sprintf('"%s" backing type is not supported', $backingType::class), $classname, $argument);
             }
 
             $type = new BackedEnumType($literalType, $backingType);

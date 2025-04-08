@@ -50,7 +50,7 @@ class PhpDocumentorArgumentTypeFactory implements ArgumentTypeFactoryInterface
     private array $cache = [];
 
     public function __construct(
-        DocBlockFactoryInterface $docBlockFactory = null,
+        ?DocBlockFactoryInterface $docBlockFactory = null,
         private readonly ContextFactory $contextFactory = new ContextFactory(),
     ) {
         $this->docBlockFactory = $docBlockFactory ?? DocBlockFactory::createInstance();
@@ -109,7 +109,7 @@ class PhpDocumentorArgumentTypeFactory implements ArgumentTypeFactoryInterface
             }
 
             if (\count($types) < 2) {
-                throw MapperException::createFromClassnameArgument(sprintf('Compound type should at least have two types, "%d" type found.', \count($types)), $classname, $argument);
+                throw MapperException::createFromClassnameArgument(\sprintf('Compound type should at least have two types, "%d" type found.', \count($types)), $classname, $argument);
             }
 
             if (2 === \count($types) && array_filter($types, static fn (TypeInterface $type) => $type instanceof NullType)) {
@@ -125,13 +125,13 @@ class PhpDocumentorArgumentTypeFactory implements ArgumentTypeFactoryInterface
             if (is_subclass_of($classname, \BackedEnum::class)) {
                 $backingReflectionType = (new \ReflectionEnum($classname))->getBackingType();
                 if (!$backingReflectionType instanceof \ReflectionNamedType) {
-                    throw MapperException::createFromClassnameArgument(sprintf('Backing type should always be of type "%s", "%s" given.', \ReflectionNamedType::class, get_debug_type($backingReflectionType)), $classname, $argument);
+                    throw MapperException::createFromClassnameArgument(\sprintf('Backing type should always be of type "%s", "%s" given.', \ReflectionNamedType::class, get_debug_type($backingReflectionType)), $classname, $argument);
                 }
 
                 return new BackedEnumType($classname, match ($backingReflectionType->getName()) {
                     'string' => new StringType(),
                     'int' => new IntegerType(),
-                    default => throw MapperException::createFromClassnameArgument(sprintf('Backing enum should be either "string" or "int", "%s" given.', $backingReflectionType->getName()), $classname, $argument),
+                    default => throw MapperException::createFromClassnameArgument(\sprintf('Backing enum should be either "string" or "int", "%s" given.', $backingReflectionType->getName()), $classname, $argument),
                 });
             }
 
@@ -170,7 +170,7 @@ class PhpDocumentorArgumentTypeFactory implements ArgumentTypeFactoryInterface
             Boolean::class => new BooleanType(),
             Null_::class => new NullType(),
             Mixed_::class => new MixedType(),
-            default => throw MapperException::createFromClassnameArgument(sprintf('Doc type "%s" is not yet supported', $documentorType->__toString()), $classname, $argument),
+            default => throw MapperException::createFromClassnameArgument(\sprintf('Doc type "%s" is not yet supported', $documentorType->__toString()), $classname, $argument),
         };
     }
 }

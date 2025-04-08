@@ -44,7 +44,7 @@ class PhpCacheFileConstructorRepository implements ConstructorRepositoryInterfac
         $this->dump(
             str_replace(
                 '//',
-                sprintf(
+                \sprintf(
                     "//\n\t'%s' => static fn() => %s,\n",
                     $constructor->classname,
                     $this->generateConstructorCode($constructor),

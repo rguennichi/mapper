@@ -11,7 +11,7 @@ class PhpCodeGenerator
      */
     public static function new(string $classname, array $arguments = []): string
     {
-        return sprintf('new %s(%s)', $classname, implode(', ', $arguments));
+        return \sprintf('new %s(%s)', $classname, implode(', ', $arguments));
     }
 
     public static function bool(bool $value): string
