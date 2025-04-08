@@ -97,6 +97,7 @@ class PhpDocumentorArgumentTypeFactoryTest extends TestCase
              * @param \Tests\Guennichi\Mapper\Fixture\Collection<\stdClass> $arg13
              * @param \Tests\Guennichi\Mapper\Fixture\IntegerEnum $arg14
              * @param \Tests\Guennichi\Mapper\Fixture\StringEnum $arg15
+             * @param array<int>|null $arg16
              */
             public function __construct(
                 public $arg1 = '',
@@ -114,6 +115,7 @@ class PhpDocumentorArgumentTypeFactoryTest extends TestCase
                 public $arg13 = null,
                 public $arg14 = null,
                 public $arg15 = null,
+                public $arg16 = null,
             ) {
             }
         }, '__construct'))->getParameters();
@@ -193,6 +195,11 @@ class PhpDocumentorArgumentTypeFactoryTest extends TestCase
         yield [
             $parameter(15),
             new BackedEnumType('Tests\Guennichi\Mapper\Fixture\StringEnum', new StringType()),
+        ];
+
+        yield [
+            $parameter(16),
+            new NullableType(new ArrayType(new CompoundType([new StringType(), new IntegerType()]), new IntegerType())),
         ];
     }
 }

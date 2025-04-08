@@ -113,7 +113,7 @@ class PhpDocumentorArgumentTypeFactory implements ArgumentTypeFactoryInterface
             }
 
             if (2 === \count($types) && array_filter($types, static fn (TypeInterface $type) => $type instanceof NullType)) {
-                return new NullableType($types[0] instanceof NullableType ? $types[1] : $types[0]);
+                return new NullableType($types[0] instanceof NullType ? $types[1] : $types[0]);
             }
 
             return new CompoundType($types);
