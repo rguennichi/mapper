@@ -22,6 +22,7 @@ return (new PhpCsFixer\Config())
         PhpCsFixer\Finder::create()
             ->in(__DIR__)
             ->exclude('cache')
+            ->notName('PhpDocumentorArgumentTypeFactoryTest.php')
             ->name('*.php'),
     )
 ;

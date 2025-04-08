@@ -94,7 +94,7 @@ class PhpDocumentorArgumentTypeFactoryTest extends TestCase
              * @param \DateTimeImmutable $arg10
              * @param string|float $arg11
              * @param \stdClass|null $arg12
-             * @param Collection<\stdClass> $arg13
+             * @param \Tests\Guennichi\Mapper\Fixture\Collection<\stdClass> $arg13
              * @param \Tests\Guennichi\Mapper\Fixture\IntegerEnum $arg14
              * @param \Tests\Guennichi\Mapper\Fixture\StringEnum $arg15
              * @param array<int>|null $arg16
